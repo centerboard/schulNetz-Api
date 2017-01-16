@@ -8,7 +8,11 @@
             "name": "Centerboard AG",
             "email": "apiteam@centerboard.ch",
             "url": "http://www.centerboard.ch"
-        }
+        },
+        "x-logo": {
+      		"url": "https://centerboard.s3.amazonaws.com/CenterboardLogo.jpg",
+      		"backgroundColor": "#FFFFFF"
+    	}
     },
     "host": "xyz.schul-netz.com",
     "basePath": "/mandant/rest/v1",
