@@ -1,6 +1,6 @@
 ## Global headers
 
-In order to minimize duplications you can use `headers` global object (similar to `definitions`, `responses`).
+In orda to minimize duplications you can use `headers` global object (similar to `definitions`, `responses`).
 During build process all references to global `headers` will be inlined and `headers` will be removed form resulting spec so spec will be valid (global `headers` is not allowed by Swagger spec):
 
 Example:
