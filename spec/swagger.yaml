@@ -1,1959 +1,2376 @@
 {
-  "swagger" : "2.0",
-  "info" : {
-    "description" : "schulNetz REST JSON API",
-    "version" : "1.0.0",
-    "title" : "schulNetz Rest API",
-    "contact" : { }
-  },
-  "host" : "dev2.schul-netz.com",
-  "basePath" : "/r43/bzwu/rest/v1",
-  "schemes" : [ "https" ],
-  "security" : [ {
-    "basicAuth" : [ ]
-  } ],
-  "paths" : {
-    "/classes" : {
-      "get" : {
-        "summary" : "Returns the classes in schulNetz",
-        "produces" : [ "application/json" ],
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Subjects",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Class"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "schulNetz Rest API",
+        "description": "schulNetz REST JSON API",
+        "contact": {
+            "name": "Centerboard AG",
+            "email": "apiteam@centerboard.ch",
+            "url": "http://www.centerboard.ch"
         }
-      },
-      "post" : {
-        "summary" : "Insert one or multiple classes in schulNetz",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "required" : false,
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/definitions/Class"
-            }
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Inserted Subject",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Class"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
     },
-    "/classes/{id}" : {
-      "post" : {
-        "summary" : "Update a class in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the subject to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Subject updated",
-            "schema" : {
-              "$ref" : "#/definitions/Class"
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
+    "host": "xyz.schul-netz.com",
+    "basePath": "/mandant/rest/v1",
+    "securityDefinitions": {
+        "basicAuth": {
+            "type": "basic",
+            "description": "Username consists of client-ID and userlogin (concatenated with a hyphen); use the userkey as the password"
         }
-      },
-      "delete" : {
-        "summary" : "Delete a class in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the subject to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Subject deleted",
-            "schema" : {
-              "$ref" : "#/definitions/Class"
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
     },
-    "/eschool/courses" : {
-      "get" : {
-        "summary" : "Returns all eSchool courses including the offers (infoEvents and singleExecutions)",
-        "produces" : [ "application/json" ],
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "eSchool Courses",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/eSchoolCourse"
-              }
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "responses": {
+        "response401": {
+            "description": "401 - Unauthorized: no or wrong user credentials (Client-ID, username, userkey)",
+            "schema": {
+                "$ref": "#/definitions/Error"
             }
-          },
-          "401" : {
-            "description" : "Unauthorized: no or wrong user credentials (Client-ID, username, userkey)",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
+        },
+        "response403": {
+            "description": "403 - Forbidden: The client is not allowed to connect to that service",
+            "schema": {
+                "$ref": "#/definitions/Error"
             }
-          },
-          "403" : {
-            "description" : "Forbidden: The client is not allowed to connect to that service",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
+        },
+        "response404": {
+            "description": "404 - Ressource/Object not found",
+            "schema": {
+                "$ref": "#/definitions/Error"
             }
-          },
-          "429" : {
-            "description" : "Too Many Requests: Number of max requests reached. Try again later.",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
+        },
+        "response429": {
+            "description": "429 - Too Many Requests: Number of max requests reached. Try again later.",
+            "schema": {
+                "$ref": "#/definitions/Error"
+            },
+            "headers": {
+                "X-Rate-Limit-Limit": {
+                    "description": "The number of allowed requests in the current period",
+                    "type": "integer"
+                },
+                "X-Rate-Limit-Remaining": {
+                    "description": "The number of remaining requests in the current period",
+                    "type": "integer"
+                },
+                "X-Rate-Limit-Reset": {
+                    "description": "The number of seconds left in the current period",
+                    "type": "integer"
+                }
             }
-          }
+        },
+        "responseDefault": {
+            "description": "Unexpected error",
+            "schema": {
+                "$ref": "#/definitions/Error"
+            },
+            "headers": {
+                "X-Rate-Limit-Limit": {
+                    "description": "The number of allowed requests in the current period",
+                    "type": "integer"
+                },
+                "X-Rate-Limit-Remaining": {
+                    "description": "The number of remaining requests in the current period",
+                    "type": "integer"
+                },
+                "X-Rate-Limit-Reset": {
+                    "description": "The number of seconds left in the current period",
+                    "type": "integer"
+                }
+            }
         }
-      }
     },
-    "/eschool/courses/{menu}" : {
-      "get" : {
-        "summary" : "Returns the eSchool course requested by the menu (including all offers - single executions and InfoEvents)",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "menu",
-          "in" : "path",
-          "description" : "menu of the course to return",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "eSchool Course",
-            "schema" : {
-              "$ref" : "#/definitions/eSchoolCourse"
+    "paths": {
+        "/me": {
+            "get": {
+                "summary": "Returns personal student information",
+                "operationId": "meGet",
+                "tags": [
+                    "me"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Personal Student-Information",
+                        "schema": {
+                            "$ref": "#/definitions/Student"
+                        },
+                        "headers": {
+                            "X-Rate-Limit-Limit": {
+                                "description": "The number of allowed requests in the current period",
+                                "type": "integer"
+                            },
+                            "X-Rate-Limit-Remaining": {
+                                "description": "The number of remaining requests in the current period",
+                                "type": "integer"
+                            },
+                            "X-Rate-Limit-Reset": {
+                                "description": "The number of seconds left in the current period",
+                                "type": "integer"
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "id": 9,
+                                "idNr": "XY01234",
+                                "lastName": "MyLastName",
+                                "firstName": "MyFirstName",
+                                "gender": "male",
+                                "birthday": "1999-09-29",
+                                "phone": "061 211 00 10",
+                                "mobile": "079 520 01 20",
+                                "email": "First.Last@schule.ch",
+                                "emailPrivate": "myPrivateMail@hotmail.com"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
             }
-          },
-          "401" : {
-            "description" : "Unauthorized: no or wrong user credentials (Client-ID, username, userkey)",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
+        },
+        "/me/grades": {
+            "get": {
+                "summary": "Returns all grades from current semester",
+                "operationId": "meGradesGet",
+                "tags": [
+                    "me"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "All Grades from current semester",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ExaminationMark"
+                            }
+                        },
+                        "examples": {
+                            "application/json": [
+                                {
+                                    "id": 99,
+                                    "course": "F-4a",
+                                    "title": "First Exam",
+                                    "date": "2016-07-20",
+                                    "mark": 4.5,
+                                    "weight": 1
+                                },
+                                {
+                                    "id": 109,
+                                    "course": "M-4a",
+                                    "title": "Trigonometrie",
+                                    "date": "2016-07-12",
+                                    "mark": 4,
+                                    "weight": 1
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
             }
-          },
-          "403" : {
-            "description" : "Forbidden: The client is not allowed to connect to that service",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
+        },
+        "/eschool/offers": {
+            "get": {
+                "summary": "Returns all eSchool offers",
+                "operationId": "eSchoolOffersGet",
+                "tags": [
+                    "eSchool"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "eSchool offers",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Offer"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
             }
-          },
-          "429" : {
-            "description" : "Too Many Requests: Number of max requests reached. Try again later.",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
+        },
+        "/eschool/offers/{oid}": {
+            "get": {
+                "summary": "Returns the eSchool offer requested by the offerID",
+                "operationId": "eSchoolOfferGet",
+                "tags": [
+                    "eSchool"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "eSchool offer",
+                        "schema": {
+                            "$ref": "#/definitions/Offer"
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "oid",
+                    "in": "path",
+                    "description": "offerID of the offer to return",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/eschool/courses": {
+            "get": {
+                "summary": "Returns all eSchool courses including the offers (infoEvents and singleExecutions)",
+                "operationId": "eSchoolCoursesGet",
+                "tags": [
+                    "eSchool"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "eSchool Courses",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/eSchoolCourse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
             }
-          }
+        },
+        "/eschool/courses/{menu}": {
+            "get": {
+                "summary": "Returns the eSchool course requested by the menu (including all offers - single executions and InfoEvents)",
+                "operationId": "eSchoolCourseGet",
+                "tags": [
+                    "eSchool"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "eSchool Course",
+                        "schema": {
+                            "$ref": "#/definitions/eSchoolCourse"
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "menu",
+                    "in": "path",
+                    "description": "menu of the course to return",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/eschool/registration": {
+            "post": {
+                "summary": "Registers a person to eSchool-offers.",
+                "operationId": "eSchoolRegistration",
+                "tags": [
+                    "eSchool"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "successful creation of registration",
+                        "schema": {
+                            "$ref": "#/definitions/PostResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request: the provided data could not be parsed to a valid registration",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "registration",
+                    "in": "body",
+                    "description": "Registration-Data for the registration to save",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/definitions/Registration"
+                    }
+                }
+            ]
+        },
+        "/classes": {
+            "get": {
+                "summary": "Returns the classes in schulNetz",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Subjects",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Class"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Insert one or multiple classes in schulNetz",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Class"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Inserted Subject",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Class"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update a classe in schulNetz",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Class"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Class updated",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Class"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/classes/{id}": {
+            "delete": {
+                "summary": "Delete a class in schulNetz",
+                "description": "",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the subject to be updated",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Subject deleted",
+                        "schema": {
+                            "$ref": "#/definitions/Class"
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "404": {
+                        "$ref": "#/responses/response404"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/portal/courses": {
+            "get": {
+                "summary": "Returns the courses in schulNetz",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Subjects",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/PortalCourse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Insert one or multiple cources in schulNetz",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/PortalCourse"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Inserted Subject",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/PortalCourse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update course in schulNetz",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/PortalCourse"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Course updated",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/PortalCourse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/portal/courses/{id}": {
+            "delete": {
+                "summary": "Delete a Course in schulNetz",
+                "description": "",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the subject to be updated",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Subject deleted",
+                        "schema": {
+                            "$ref": "#/definitions/PortalCourse"
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "404": {
+                        "$ref": "#/responses/response404"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/profiles": {
+            "get": {
+                "summary": "Returns the profiles available in schulNetz",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Subjects",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Profile"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Insert one or multiple profiles in schulNetz",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Profile"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Inserted Profile",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Profile"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update profile in schulNetz",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Profile"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "profile updated",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Profile"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/profiles/{id}": {
+            "delete": {
+                "summary": "Delete a profile in schulNetz",
+                "description": "",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the subject to be updated",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Subject deleted",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Profile"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "404": {
+                        "$ref": "#/responses/response404"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/rooms": {
+            "get": {
+                "summary": "Returns the rooms available in schulNetz",
+                "tags": [
+                    "RoomsEvents"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Rooms",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Room"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Insert one or multiple rooms in schulNetz",
+                "tags": [
+                    "RoomsEvents"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Room"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Inserted Room",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Room"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update room in schulNetz",
+                "tags": [
+                    "RoomsEvents"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Room"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room updated",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Room"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/rooms/{id}": {
+            "delete": {
+                "summary": "Deletes a room in schulNetz",
+                "description": "",
+                "tags": [
+                    "RoomsEvents"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the room to be updated",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room deleted",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Room"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "404": {
+                        "$ref": "#/responses/response404"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/student": {
+            "get": {
+                "summary": "Returns the students in schulNetz",
+                "tags": [
+                    "Student"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Subjects",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Student"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Insert one or multiple students in schulNetz",
+                "tags": [
+                    "Student"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Student"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Inserted Subject",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Student"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update student in schulNetz",
+                "tags": [
+                    "Student"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Student"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Student updated",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Student"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/students/{id}": {
+            "delete": {
+                "summary": "Delete a teacher in schulNetz",
+                "description": "",
+                "tags": [
+                    "Student"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the subject to be updated",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Subject deleted",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Teacher"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "404": {
+                        "$ref": "#/responses/response404"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/subjects": {
+            "get": {
+                "summary": "Returns the subjects available in schulNetz",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Subjects",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Subject"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Insert a new subject in schulNetz",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Subject"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Inserted Subject",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Subject"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update a subject in schulNetz",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Subject"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Subject updated",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Subject"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/subjects/{id}": {
+            "delete": {
+                "summary": "Delete a subject in schulNetz",
+                "description": "",
+                "tags": [
+                    "CoursesClasses"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the subject to be updated",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Subject deleted",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Subject"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "404": {
+                        "$ref": "#/responses/response404"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/teacher": {
+            "get": {
+                "summary": "Returns the teachers in schulNetz",
+                "tags": [
+                    "Teacher"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Subjects",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Teacher"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Insert one or multiple teachers in schulNetz",
+                "tags": [
+                    "Teacher"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Teacher"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Inserted Subject",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Teacher"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update teacher in schulNetz",
+                "tags": [
+                    "Teacher"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Teacher"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "teacher updated",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Teacher"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
+        },
+        "/teachers/{id}": {
+            "delete": {
+                "summary": "Delete a teacher in schulNetz",
+                "description": "",
+                "tags": [
+                    "Teacher"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the subject to be updated",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Subject deleted",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Teacher"
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/responses/response401"
+                    },
+                    "403": {
+                        "$ref": "#/responses/response403"
+                    },
+                    "404": {
+                        "$ref": "#/responses/response404"
+                    },
+                    "429": {
+                        "$ref": "#/responses/response429"
+                    },
+                    "default": {
+                        "$ref": "#/responses/responseDefault"
+                    }
+                }
+            }
         }
-      }
     },
-    "/eschool/offers" : {
-      "get" : {
-        "summary" : "Returns all eSchool offers",
-        "produces" : [ "application/json" ],
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "eSchool offers",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Offer"
-              }
+    "definitions": {
+        "Student": {
+            "type": "object",
+            "required": [
+                "lastName",
+                "firstName"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "idNr": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "loginActive": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "gender": {
+                    "type": "string",
+                    "enum": [
+                        "male",
+                        "female"
+                    ]
+                },
+                "birthday": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "street": {
+                    "type": "string"
+                },
+                "zip": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string",
+                    "format": "phone"
+                },
+                "mobile": {
+                    "type": "string",
+                    "format": "phone"
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email"
+                },
+                "emailPrivate": {
+                    "type": "string",
+                    "format": "email"
+                },
+                "profil1": {
+                    "type": "string"
+                },
+                "profil2": {
+                    "type": "string"
+                },
+                "courses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PortalCourse"
+                    }
+                },
+                "classes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Class"
+                    }
+                }
             }
-          },
-          "401" : {
-            "description" : "Unauthorized: no or wrong user credentials (Client-ID, username, userkey)",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
+        },
+        "ExaminationMark": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "course": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "mark": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "weight": {
+                    "type": "number",
+                    "format": "double"
+                }
             }
-          },
-          "403" : {
-            "description" : "Forbidden: The client is not allowed to connect to that service",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
+        },
+        "Offer": {
+            "type": "object",
+            "required": [
+                "title",
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "titleShort": {
+                    "type": "string"
+                },
+                "offerNumber": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "abstract": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "menu": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "publicationStart": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "publicationEnd": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "registrationDeadline": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "scope": {
+                    "type": "string"
+                },
+                "place": {
+                    "type": "string"
+                },
+                "mapLocation": {
+                    "type": "string"
+                },
+                "requirements": {
+                    "type": "string"
+                },
+                "certificate": {
+                    "type": "string"
+                },
+                "informationEvent": {
+                    "type": "string"
+                },
+                "additionalInformation": {
+                    "type": "string"
+                },
+                "links": {
+                    "type": "string"
+                },
+                "maxRegistrations": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "canExceedMaxRegistrations": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "currentRegistrationNumber": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "courseStart": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "courseEnd": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "courseDays": {
+                    "type": "string"
+                },
+                "courseTimes": {
+                    "type": "string"
+                },
+                "courseRoom": {
+                    "type": "string"
+                },
+                "courseProfessor": {
+                    "type": "string"
+                },
+                "totalLessons": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "costTotal": {
+                    "type": "string"
+                },
+                "costDetails": {
+                    "type": "string"
+                },
+                "contactName": {
+                    "type": "string"
+                },
+                "contactPhone": {
+                    "type": "string"
+                },
+                "contactMail": {
+                    "type": "string"
+                }
             }
-          },
-          "429" : {
-            "description" : "Too Many Requests: Number of max requests reached. Try again later.",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
+        },
+        "eSchoolCourse": {
+            "type": "object",
+            "required": [
+                "menu"
+            ],
+            "properties": {
+                "menu": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "offerNumber": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "abstract": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "scope": {
+                    "type": "string"
+                },
+                "requirements": {
+                    "type": "string"
+                },
+                "certificate": {
+                    "type": "string"
+                },
+                "informationEvent": {
+                    "type": "string"
+                },
+                "additionalInformation": {
+                    "type": "string"
+                },
+                "links": {
+                    "type": "string"
+                },
+                "costDetails": {
+                    "type": "string"
+                },
+                "contactName": {
+                    "type": "string"
+                },
+                "contactPhone": {
+                    "type": "string"
+                },
+                "contactMail": {
+                    "type": "string"
+                },
+                "courseExecutions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CourseOffer"
+                    }
+                },
+                "infoEvents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CourseOffer"
+                    }
+                }
             }
-          }
+        },
+        "CourseOffer": {
+            "type": "object",
+            "required": [
+                "offerId",
+                "titleShort"
+            ],
+            "properties": {
+                "offerId": {
+                    "type": "string"
+                },
+                "titleShort": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "publicationStart": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "publicationEnd": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "registrationDeadline": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "place": {
+                    "type": "string"
+                },
+                "mapLocation": {
+                    "type": "string"
+                },
+                "maxRegistrations": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "canExceedMaxRegistrations": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "currentRegistrationNumber": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "courseStart": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "courseEnd": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "courseDays": {
+                    "type": "string"
+                },
+                "courseTimes": {
+                    "type": "string"
+                },
+                "courseRoom": {
+                    "type": "string"
+                },
+                "courseProfessor": {
+                    "type": "string"
+                },
+                "totalLessons": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "costTotal": {
+                    "type": "string"
+                }
+            }
+        },
+        "Registration": {
+            "type": "object",
+            "required": [
+                "lastName",
+                "firstName",
+                "offerIds"
+            ],
+            "properties": {
+                "lastName": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "firstName": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "fullFirstName": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Full First Name (eg Anna Lena)"
+                },
+                "gender": {
+                    "type": "string",
+                    "enum": [
+                        "male",
+                        "female"
+                    ]
+                },
+                "birthday": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "salutation": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "addressLine1": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "addressLine2": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "postOfficeBox": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "zip": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "city": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "canton": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "country": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "phone": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "phoneOffice": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "mobile": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "telefax": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email"
+                },
+                "emailPrivate": {
+                    "type": "string",
+                    "format": "email"
+                },
+                "nationality": {
+                    "type": "string",
+                    "maxLength": 2,
+                    "description": "Alpha-2 code ISO-3166"
+                },
+                "nationality2": {
+                    "type": "string",
+                    "maxLength": 2,
+                    "description": "Alpha-2 code ISO-3166"
+                },
+                "hometown": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "hometown2": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "dateEntry": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "dateExit": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "registerNr": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Matrikel-Nr."
+                },
+                "idNr": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "externalKey": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "socialSecurityNumber": {
+                    "type": "string",
+                    "maxLength": 13,
+                    "description": "Swiss Social Security Number without separation points"
+                },
+                "invoiceLastName": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoiceFirstName": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoiceCompany": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoiceSalutation": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoiceAddressLine1": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoiceAddressLine2": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoicePostOfficeBox": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoiceZip": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoiceCity": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoiceCanton": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoiceCountry": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoicePhone": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoicePhoneOffice": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "invoiceTelefax": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "comment": {
+                    "type": "string"
+                },
+                "offerIds": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "Teacher": {
+            "type": "object",
+            "required": [
+                "firstName",
+                "lastName"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "idNr": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "loginActive": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "birthday": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "street": {
+                    "type": "string"
+                },
+                "plz": {
+                    "type": "string"
+                },
+                "zip": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "mobile": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "emailPrivate": {
+                    "type": "string"
+                },
+                "courses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PortalCourse"
+                    }
+                },
+                "classes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Class"
+                    }
+                }
+            }
+        },
+        "Room": {
+            "type": "object",
+            "required": [
+                "token"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "Profile": {
+            "type": "object",
+            "required": [
+                "token"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "Subject": {
+            "type": "object",
+            "required": [
+                "token"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "Class": {
+            "type": "object",
+            "required": [
+                "name",
+                "semester"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "profiles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "teachers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "PortalCourse": {
+            "type": "object",
+            "required": [
+                "semester",
+                "token"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
+                "subject": {
+                    "type": "string"
+                },
+                "rounding": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "teachers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "courseType": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CourseEvent"
+                    }
+                }
+            }
+        },
+        "CourseEvent": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Date": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "resource": {
+                    "type": "string"
+                }
+            }
+        },
+        "Error": {
+            "required": [
+                "code",
+                "message"
+            ],
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "<ul><li>1001: Technical error while calling the Web Service</li><li>1002: Error while parsing the JSON</li><li>1003: Invalid input</li><li>1004: Database Error while inserting</li><li>1005: Database Error because of duplicate entry</li><li>5001: Registration called with Invalid offerId</li></ul>"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "PostResponse": {
+            "required": [
+                "id",
+                "type"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
         }
-      }
-    },
-    "/eschool/offers/{oid}" : {
-      "get" : {
-        "summary" : "Returns the eSchool offer requested by the offerID",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "oid",
-          "in" : "path",
-          "description" : "offerID of the offer to return",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "eSchool offer",
-            "schema" : {
-              "$ref" : "#/definitions/Offer"
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized: no or wrong user credentials (Client-ID, username, userkey)",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
-            }
-          },
-          "403" : {
-            "description" : "Forbidden: The client is not allowed to connect to that service",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
-            }
-          },
-          "429" : {
-            "description" : "Too Many Requests: Number of max requests reached. Try again later.",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/eschool/registration" : {
-      "post" : {
-        "summary" : "Registers a person to eSchool-offers.",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "required" : false,
-          "schema" : {
-            "$ref" : "#/definitions/Registration"
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "successful creation of registration",
-            "schema" : {
-              "$ref" : "#/definitions/PostResponse"
-            }
-          },
-          "400" : {
-            "description" : "Bad Request: the provided data could not be parsed to a valid registration",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized: no or wrong user credentials (Client-ID, username, userkey)",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
-            }
-          },
-          "403" : {
-            "description" : "Forbidden: The client is not allowed to connect to that service",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
-            }
-          },
-          "429" : {
-            "description" : "Too Many Requests: Number of max requests reached. Try again later.",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/me" : {
-      "get" : {
-        "summary" : "Returns personal student information",
-        "produces" : [ "application/json" ],
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Personal Student-Information",
-            "schema" : {
-              "$ref" : "#/definitions/Student"
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/me/grades" : {
-      "get" : {
-        "summary" : "Returns all grades from current semester",
-        "produces" : [ "application/json" ],
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "All Grades from current semester",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/ExaminationMark"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/portal/courses" : {
-      "get" : {
-        "summary" : "Returns the courses in schulNetz",
-        "produces" : [ "application/json" ],
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Subjects",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/PortalCourse"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      },
-      "post" : {
-        "summary" : "Insert one or multiple cources in schulNetz",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "required" : false,
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/definitions/PortalCourse"
-            }
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Inserted Subject",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/PortalCourse"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/portal/courses/{id}" : {
-      "post" : {
-        "summary" : "Update a course in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the subject to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Subject updated",
-            "schema" : {
-              "$ref" : "#/definitions/PortalCourse"
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      },
-      "delete" : {
-        "summary" : "Delete a Course in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the subject to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Subject deleted",
-            "schema" : {
-              "$ref" : "#/definitions/PortalCourse"
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/profiles" : {
-      "get" : {
-        "summary" : "Returns the profiles available in schulNetz",
-        "produces" : [ "application/json" ],
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Subjects",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Profile"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      },
-      "post" : {
-        "summary" : "Insert one or multiple profiles in schulNetz",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "required" : false,
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/definitions/Profile"
-            }
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Inserted Subject",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Profile"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/profiles/{id}" : {
-      "post" : {
-        "summary" : "Update a profile in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the subject to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Subject updated",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Profile"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      },
-      "delete" : {
-        "summary" : "Delete a profile in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the subject to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Subject deleted",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Profile"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/rooms" : {
-      "get" : {
-        "summary" : "Returns the rooms available in schulNetz",
-        "produces" : [ "application/json" ],
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Rooms",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Room"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      },
-      "post" : {
-        "summary" : "Insert one or multiple rooms in schulNetz",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "required" : false,
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/definitions/Room"
-            }
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Inserted Room",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Room"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/rooms/{id}" : {
-      "post" : {
-        "summary" : "Update a room in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the room to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Room deleted",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Room"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      },
-      "delete" : {
-        "summary" : "Deletes a room in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the room to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Room deleted",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Room"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/student" : {
-      "get" : {
-        "summary" : "Returns the students in schulNetz",
-        "produces" : [ "application/json" ],
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Subjects",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Student"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      },
-      "post" : {
-        "summary" : "Insert one or multiple students in schulNetz",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "required" : false,
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/definitions/Student"
-            }
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Inserted Subject",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Student"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/students/{id}" : {
-      "post" : {
-        "summary" : "Update a teacher in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the subject to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Subject updated",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Teacher"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      },
-      "delete" : {
-        "summary" : "Delete a teacher in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the subject to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Subject deleted",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Teacher"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/subjects" : {
-      "get" : {
-        "summary" : "Returns the subjects available in schulNetz",
-        "produces" : [ "application/json" ],
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Subjects",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Subject"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      },
-      "post" : {
-        "summary" : "Insert a new subject in schulNetz",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "required" : false,
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/definitions/Subject"
-            }
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Inserted Subject",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Subject"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/subjects/{id}" : {
-      "post" : {
-        "summary" : "Update a subject in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the subject to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Subject updated",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Subject"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      },
-      "delete" : {
-        "summary" : "Delete a subject in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the subject to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Subject deleted",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Subject"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/teacher" : {
-      "get" : {
-        "summary" : "Returns the teachers in schulNetz",
-        "produces" : [ "application/json" ],
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Subjects",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Teacher"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      },
-      "post" : {
-        "summary" : "Insert one or multiple teachers in schulNetz",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "required" : false,
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/definitions/Teacher"
-            }
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Inserted Subject",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Teacher"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
-    },
-    "/teachers/{id}" : {
-      "post" : {
-        "summary" : "Update a teacher in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the subject to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Subject updated",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Teacher"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      },
-      "delete" : {
-        "summary" : "Delete a teacher in schulNetz",
-        "description" : "",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "Id of the subject to be updated",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Subject deleted",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/Teacher"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Status 401"
-          },
-          "403" : {
-            "description" : "Status 403"
-          },
-          "404" : {
-            "description" : "Status 404"
-          },
-          "429" : {
-            "description" : "Status 429"
-          }
-        }
-      }
     }
-  },
-  "securityDefinitions" : {
-    "basicAuth" : {
-      "description" : "Username consists of client-ID and userlogin (concatenated with a hyphen); use the userkey as the password",
-      "type" : "basic"
-    }
-  },
-  "definitions" : {
-    "Student" : {
-      "type" : "object",
-      "required" : [ "birthday", "firstName", "lastName" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "idNr" : {
-          "type" : "string"
-        },
-        "lastName" : {
-          "type" : "string"
-        },
-        "firstName" : {
-          "type" : "string"
-        },
-        "loginActive" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "gender" : {
-          "type" : "string"
-        },
-        "birthday" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "street" : {
-          "type" : "string"
-        },
-        "plz" : {
-          "type" : "string"
-        },
-        "zip" : {
-          "type" : "string"
-        },
-        "city" : {
-          "type" : "string"
-        },
-        "phone" : {
-          "type" : "string"
-        },
-        "mobile" : {
-          "type" : "string"
-        },
-        "email" : {
-          "type" : "string"
-        },
-        "emailPrivate" : {
-          "type" : "string"
-        },
-        "profil1" : {
-          "type" : "string"
-        },
-        "profil2" : {
-          "type" : "string"
-        },
-        "courses" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/PortalCourse"
-          }
-        },
-        "classes" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/Class"
-          }
-        }
-      }
-    },
-    "Teacher" : {
-      "type" : "object",
-      "required" : [ "firstName", "lastName" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "idNr" : {
-          "type" : "string"
-        },
-        "token" : {
-          "type" : "string"
-        },
-        "lastName" : {
-          "type" : "string"
-        },
-        "firstName" : {
-          "type" : "string"
-        },
-        "loginActive" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "birthday" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "street" : {
-          "type" : "string"
-        },
-        "plz" : {
-          "type" : "string"
-        },
-        "zip" : {
-          "type" : "string"
-        },
-        "city" : {
-          "type" : "string"
-        },
-        "phone" : {
-          "type" : "string"
-        },
-        "mobile" : {
-          "type" : "string"
-        },
-        "email" : {
-          "type" : "string"
-        },
-        "emailPrivate" : {
-          "type" : "string"
-        },
-        "courses" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/PortalCourse"
-          }
-        },
-        "classes" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/Class"
-          }
-        }
-      }
-    },
-    "Room" : {
-      "type" : "object",
-      "required" : [ "token" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "token" : {
-          "type" : "string"
-        },
-        "description" : {
-          "type" : "string"
-        }
-      }
-    },
-    "Profile" : {
-      "type" : "object",
-      "required" : [ "token" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "token" : {
-          "type" : "string"
-        },
-        "description" : {
-          "type" : "string"
-        }
-      }
-    },
-    "Subject" : {
-      "type" : "object",
-      "required" : [ "token" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "token" : {
-          "type" : "string"
-        },
-        "description" : {
-          "type" : "string"
-        }
-      }
-    },
-    "Class" : {
-      "type" : "object",
-      "required" : [ "name", "semester" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "token" : {
-          "type" : "string"
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "semester" : {
-          "type" : "string"
-        },
-        "remark" : {
-          "type" : "string"
-        },
-        "profiles" : {
-          "type" : "array",
-          "items" : {
-            "type" : "string"
-          }
-        },
-        "teachers" : {
-          "type" : "array",
-          "items" : {
-            "type" : "string"
-          }
-        }
-      }
-    },
-    "PortalCourse" : {
-      "type" : "object",
-      "required" : [ "semester", "token" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "token" : {
-          "type" : "string"
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "semester" : {
-          "type" : "string"
-        },
-        "subject" : {
-          "type" : "string"
-        },
-        "rounding" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "teachers" : {
-          "type" : "array",
-          "items" : {
-            "type" : "string"
-          }
-        },
-        "courseType" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "events" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/CourseEvent"
-          }
-        }
-      }
-    },
-    "CourseEvent" : {
-      "type" : "object",
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "Date" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "startTime" : {
-          "type" : "string"
-        },
-        "endTime" : {
-          "type" : "string"
-        },
-        "resource" : {
-          "type" : "string"
-        }
-      }
-    },
-    "ExaminationMark" : {
-      "type" : "object",
-      "required" : [ "title" ],
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "course" : {
-          "type" : "string"
-        },
-        "title" : {
-          "type" : "string"
-        },
-        "date" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "mark" : {
-          "type" : "number",
-          "format" : "double"
-        },
-        "weight" : {
-          "type" : "number",
-          "format" : "double"
-        }
-      }
-    },
-    "Offer" : {
-      "type" : "object",
-      "required" : [ "id", "title" ],
-      "properties" : {
-        "id" : {
-          "type" : "string"
-        },
-        "title" : {
-          "type" : "string"
-        },
-        "titleShort" : {
-          "type" : "string"
-        },
-        "offerNumber" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "abstract" : {
-          "type" : "string"
-        },
-        "type" : {
-          "type" : "string"
-        },
-        "menu" : {
-          "type" : "string"
-        },
-        "content" : {
-          "type" : "string"
-        },
-        "publicationStart" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "publicationEnd" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "registrationDeadline" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "scope" : {
-          "type" : "string"
-        },
-        "place" : {
-          "type" : "string"
-        },
-        "mapLocation" : {
-          "type" : "string"
-        },
-        "requirements" : {
-          "type" : "string"
-        },
-        "certificate" : {
-          "type" : "string"
-        },
-        "informationEvent" : {
-          "type" : "string"
-        },
-        "additionalInformation" : {
-          "type" : "string"
-        },
-        "links" : {
-          "type" : "string"
-        },
-        "maxRegistrations" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "canExceedMaxRegistrations" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "currentRegistrationNumber" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "courseStart" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "courseEnd" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "courseDays" : {
-          "type" : "string"
-        },
-        "courseTimes" : {
-          "type" : "string"
-        },
-        "courseRoom" : {
-          "type" : "string"
-        },
-        "courseProfessor" : {
-          "type" : "string"
-        },
-        "totalLessons" : {
-          "type" : "number",
-          "format" : "double"
-        },
-        "costTotal" : {
-          "type" : "string"
-        },
-        "costDetails" : {
-          "type" : "string"
-        },
-        "contactName" : {
-          "type" : "string"
-        },
-        "contactPhone" : {
-          "type" : "string"
-        },
-        "contactMail" : {
-          "type" : "string"
-        }
-      }
-    },
-    "eSchoolCourse" : {
-      "type" : "object",
-      "required" : [ "menu" ],
-      "properties" : {
-        "menu" : {
-          "type" : "string"
-        },
-        "title" : {
-          "type" : "string"
-        },
-        "offerNumber" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "type" : {
-          "type" : "string"
-        },
-        "abstract" : {
-          "type" : "string"
-        },
-        "content" : {
-          "type" : "string"
-        },
-        "scope" : {
-          "type" : "string"
-        },
-        "requirements" : {
-          "type" : "string"
-        },
-        "certificate" : {
-          "type" : "string"
-        },
-        "informationEvent" : {
-          "type" : "string"
-        },
-        "additionalInformation" : {
-          "type" : "string"
-        },
-        "links" : {
-          "type" : "string"
-        },
-        "costDetails" : {
-          "type" : "string"
-        },
-        "contactName" : {
-          "type" : "string"
-        },
-        "contactPhone" : {
-          "type" : "string"
-        },
-        "contactMail" : {
-          "type" : "string"
-        },
-        "courseExecutions" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/CourseOffer"
-          }
-        },
-        "infoEvents" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/CourseOffer"
-          }
-        }
-      }
-    },
-    "CourseOffer" : {
-      "type" : "object",
-      "required" : [ "offerId", "titleShort" ],
-      "properties" : {
-        "offerId" : {
-          "type" : "string"
-        },
-        "titleShort" : {
-          "type" : "string"
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "publicationStart" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "publicationEnd" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "registrationDeadline" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "place" : {
-          "type" : "string"
-        },
-        "mapLocation" : {
-          "type" : "string"
-        },
-        "maxRegistrations" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "canExceedMaxRegistrations" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "currentRegistrationNumber" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "courseStart" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "courseEnd" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "courseDays" : {
-          "type" : "string"
-        },
-        "courseTimes" : {
-          "type" : "string"
-        },
-        "courseRoom" : {
-          "type" : "string"
-        },
-        "courseProfessor" : {
-          "type" : "string"
-        },
-        "totalLessons" : {
-          "type" : "number",
-          "format" : "double"
-        },
-        "costTotal" : {
-          "type" : "string"
-        }
-      }
-    },
-    "Registration" : {
-      "type" : "object",
-      "required" : [ "firstName", "lastName", "offerIds" ],
-      "properties" : {
-        "lastName" : {
-          "type" : "string"
-        },
-        "firstName" : {
-          "type" : "string"
-        },
-        "fullFirstName" : {
-          "type" : "string",
-          "description" : "Full First Name (eg Anna Lena)"
-        },
-        "gender" : {
-          "type" : "string"
-        },
-        "birthday" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "salutation" : {
-          "type" : "string"
-        },
-        "addressLine1" : {
-          "type" : "string"
-        },
-        "addressLine2" : {
-          "type" : "string"
-        },
-        "postOfficeBox" : {
-          "type" : "string"
-        },
-        "zip" : {
-          "type" : "string"
-        },
-        "city" : {
-          "type" : "string"
-        },
-        "canton" : {
-          "type" : "string"
-        },
-        "country" : {
-          "type" : "string"
-        },
-        "phone" : {
-          "type" : "string"
-        },
-        "phoneOffice" : {
-          "type" : "string"
-        },
-        "mobile" : {
-          "type" : "string"
-        },
-        "telefax" : {
-          "type" : "string"
-        },
-        "email" : {
-          "type" : "string"
-        },
-        "emailPrivate" : {
-          "type" : "string"
-        },
-        "nationality" : {
-          "type" : "string",
-          "description" : "Alpha-2 code ISO-3166"
-        },
-        "nationality2" : {
-          "type" : "string",
-          "description" : "Alpha-2 code ISO-3166"
-        },
-        "hometown" : {
-          "type" : "string"
-        },
-        "hometown2" : {
-          "type" : "string"
-        },
-        "dateEntry" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "dateExit" : {
-          "type" : "string",
-          "format" : "date"
-        },
-        "registerNr" : {
-          "type" : "string",
-          "description" : "Matrikel-Nr."
-        },
-        "idNr" : {
-          "type" : "string"
-        },
-        "externalKey" : {
-          "type" : "string"
-        },
-        "socialSecurityNumber" : {
-          "type" : "string",
-          "description" : "Swiss Social Security Number without separation points"
-        },
-        "invoiceLastName" : {
-          "type" : "string"
-        },
-        "invoiceFirstName" : {
-          "type" : "string"
-        },
-        "invoiceCompany" : {
-          "type" : "string"
-        },
-        "invoiceSalutation" : {
-          "type" : "string"
-        },
-        "invoiceAddressLine1" : {
-          "type" : "string"
-        },
-        "invoiceAddressLine2" : {
-          "type" : "string"
-        },
-        "invoicePostOfficeBox" : {
-          "type" : "string"
-        },
-        "invoiceZip" : {
-          "type" : "string"
-        },
-        "invoiceCity" : {
-          "type" : "string"
-        },
-        "invoiceCanton" : {
-          "type" : "string"
-        },
-        "invoiceCountry" : {
-          "type" : "string"
-        },
-        "invoicePhone" : {
-          "type" : "string"
-        },
-        "invoicePhoneOffice" : {
-          "type" : "string"
-        },
-        "invoiceTelefax" : {
-          "type" : "string"
-        },
-        "comment" : {
-          "type" : "string"
-        },
-        "offerIds" : {
-          "type" : "array",
-          "items" : {
-            "type" : "string"
-          }
-        }
-      }
-    },
-    "Error" : {
-      "type" : "object",
-      "required" : [ "code", "message" ],
-      "properties" : {
-        "code" : {
-          "type" : "integer",
-          "format" : "int32",
-          "description" : "<ul> <li>1001: Technical error while calling the Web Service</li> <li>1002: Error while parsing the JSON</li> <li>1003: Invalid input</li> <li>1004: Database Error while inserting</li> <li>1005: Database Error because of duplicate entry</li> <li>5001: Registration called with Invalid offerId</li> </ul>"
-        },
-        "message" : {
-          "type" : "string"
-        },
-        "description" : {
-          "type" : "string"
-        }
-      }
-    },
-    "PostResponse" : {
-      "type" : "object",
-      "required" : [ "id", "type" ],
-      "properties" : {
-        "id" : {
-          "type" : "string"
-        },
-        "type" : {
-          "type" : "string"
-        }
-      }
-    }
-  }
 }
