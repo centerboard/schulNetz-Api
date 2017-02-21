@@ -1757,6 +1757,9 @@
         "course": {
           "type": "string"
         },
+        "subject": {
+          "type": "string"
+        },
         "title": {
           "type": "string"
         },
@@ -2652,7 +2655,7 @@
         "code": {
           "type": "integer",
           "format": "int32",
-          "description": "<ul><li>1001: Technical error while calling the Web Service</li><li>1002: Error while parsing the JSON</li><li>1003: Invalid input</li><li>1004: Database Error while inserting</li><li>1005: Database Error because of duplicate entry</li><li>5001: Registration called with Invalid offerId</li></ul>"
+          "description": "<ul><li>1001: Technical error while calling the Web Service</li><li>1002: Error while parsing the JSON</li><li>1003: Invalid input</li><li>1004: Database Error while inserting</li><li>1005: Database Error because of duplicate entry</li><li>5001: Invalid offerId</li><li>5002: Inavlid course menu</li></ul>"
         },
         "message": {
           "type": "string"
