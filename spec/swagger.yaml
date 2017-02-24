@@ -231,7 +231,7 @@
               "items": {
                 "$ref": "#/definitions/AbsenceNotice"
               }
-            },
+            }
           },
           "401": {
             "$ref": "#/responses/response401"
@@ -268,7 +268,7 @@
               "items": {
                 "$ref": "#/definitions/Absence"
               }
-            },
+            }
           },
           "401": {
             "$ref": "#/responses/response401"
@@ -305,7 +305,7 @@
               "items": {
                 "$ref": "#/definitions/Event"
               }
-            },
+            }
           },
           "401": {
             "$ref": "#/responses/response401"
@@ -1183,6 +1183,66 @@
         }
       }
     },
+    "/rooms/{id}/events": {
+      "get": {
+        "summary": "Returns all events between min- and max-dates if provided, else from current semester",
+        "operationId": "roomsEventsGet",
+        "tags": [
+          "RoomsEvents"
+        ],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All events between min- and max-dates if provided, else from current semester",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Event"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/responses/response401"
+          },
+          "403": {
+            "$ref": "#/responses/response403"
+          },
+          "429": {
+            "$ref": "#/responses/response429"
+          },
+          "default": {
+            "$ref": "#/responses/responseDefault"
+          }
+        }
+      },
+      "parameters": [
+        {
+            "name": "id",
+            "in": "path",
+            "description": "Id of the room",
+            "required": true,
+            "type": "string"
+        },
+        {
+          "name": "min_date",
+          "in": "query",
+          "description": "Minimum date for filtering events, will be ignored if not in SQL-Format (YYYY-MM-DD)",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "max_date",
+          "in": "query",
+          "description": "Maximum date for filtering events, will be ignored if not in SQL-Format (YYYY-MM-DD)",
+          "required": false,
+          "type": "string"
+        }
+      ]
+    },
     "/student": {
       "get": {
         "summary": "Returns the students in schulNetz",
@@ -1830,7 +1890,7 @@
       "required": [
         "studentId",
         "dateFrom",
-        "dateTo",
+        "dateTo"
       ],
       "properties": {
         "id": {
@@ -1899,7 +1959,7 @@
       "required": [
         "startDate",
         "endDate",
-        "text",
+        "text"
       ],
       "properties": {
         "id": {
@@ -1920,6 +1980,12 @@
           "type": "string"
         },
         "roomToken": {
+          "type": "string"
+        },
+        "roomId": {
+          "type": "string"
+        },
+        "courseId": {
           "type": "string"
         },
         "teacher": {
@@ -1948,6 +2014,10 @@
         },
         "display": {
           "type": "string"
+        },
+        "eventType": {
+          "type": "string",
+          "description": "Event-Type: Timetable, exams, events"
         }
       }
     },
@@ -2495,8 +2565,7 @@
       ],
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string"
         },
         "token": {
           "type": "string"
