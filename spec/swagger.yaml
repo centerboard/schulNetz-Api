@@ -338,6 +338,142 @@
         }
       ]
     },
+    "/me/exams": {
+      "get": {
+        "summary": "Returns all exams between min- and max-dates if provided, else from current semester",
+        "operationId": "meExamsGet",
+        "tags": [
+          "me"
+        ],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All exams between min- and max-dates if provided, else from current semester",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Event"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/responses/response401"
+          },
+          "403": {
+            "$ref": "#/responses/response403"
+          },
+          "429": {
+            "$ref": "#/responses/response429"
+          },
+          "default": {
+            "$ref": "#/responses/responseDefault"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "min_date",
+          "in": "query",
+          "description": "Minimum date for filtering exams, will be ignored if not in SQL-Format (YYYY-MM-DD)",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "max_date",
+          "in": "query",
+          "description": "Maximum date for filtering exams, will be ignored if not in SQL-Format (YYYY-MM-DD)",
+          "required": false,
+          "type": "string"
+        }
+      ]
+    },
+
+
+    "/eschool/offerTypes": {
+      "get": {
+        "summary": "Returns all eSchool offer Types",
+        "operationId": "eSchoolOfferTypesGet",
+        "tags": [
+          "eSchool"
+        ],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "eSchool offer Types",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/OfferType"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/responses/response401"
+          },
+          "403": {
+            "$ref": "#/responses/response403"
+          },
+          "429": {
+            "$ref": "#/responses/response429"
+          },
+          "default": {
+            "$ref": "#/responses/responseDefault"
+          }
+        }
+      }
+    },
+    "/eschool/offerTypes/{tid}": {
+      "get": {
+        "summary": "Returns the eSchool offer-type requested by the typeID",
+        "operationId": "eSchoolOfferTypeGet",
+        "tags": [
+          "eSchool"
+        ],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "eSchool offer",
+            "schema": {
+              "$ref": "#/definitions/OfferType"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/response401"
+          },
+          "403": {
+            "$ref": "#/responses/response403"
+          },
+          "429": {
+            "$ref": "#/responses/response429"
+          },
+          "default": {
+            "$ref": "#/responses/responseDefault"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "tid",
+          "in": "path",
+          "description": "typeID of the offer-type to return",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+
     "/eschool/offers": {
       "get": {
         "summary": "Returns all eSchool offers",
@@ -373,7 +509,16 @@
             "$ref": "#/responses/responseDefault"
           }
         }
-      }
+      },
+      "parameters": [
+        {
+          "name": "type",
+          "in": "query",
+          "description": "Filter the offers by type",
+          "required": false,
+          "type": "string"
+        }
+      ]
     },
     "/eschool/offers/{oid}": {
       "get": {
@@ -1221,11 +1366,11 @@
       },
       "parameters": [
         {
-            "name": "id",
-            "in": "path",
-            "description": "Id of the room",
-            "required": true,
-            "type": "string"
+          "name": "id",
+          "in": "path",
+          "description": "Id of the room",
+          "required": true,
+          "type": "string"
         },
         {
           "name": "min_date",
@@ -2142,6 +2287,40 @@
         },
         "contactMail": {
           "type": "string"
+        }
+      }
+    },
+    "OfferType": {
+      "type": "object",
+      "required": [
+        "title",
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "titleShort": {
+          "type": "string"
+        },
+        "infoText": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "overviewFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "detailFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
