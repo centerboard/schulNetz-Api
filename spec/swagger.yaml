@@ -1979,6 +1979,9 @@
         "weight": {
           "type": "number",
           "format": "double"
+        },
+        "isConfirmed": {
+          "type": "boolean"
         }
       }
     },
@@ -2750,6 +2753,21 @@
           "type": "string"
         },
         "description": {
+          "type": "string"
+        },
+        "capacity": {
+          "type": "integer"
+        },
+        "place": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "responsible": {
           "type": "string"
         }
       }
