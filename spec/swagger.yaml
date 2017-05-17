@@ -1397,11 +1397,11 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Subjects",
+            "description": "Successful: Array of students",
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/Student"
+                "$ref": "#/definitions/StudentRead"
               }
             }
           },
@@ -1944,19 +1944,44 @@
         "profil2": {
           "type": "string"
         },
-        "courses": {
+        "courseIds" : {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/PortalCourse"
+            "type": "string"
           }
         },
-        "classes": {
+        "classIds" : {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Class"
+            "type": "string"
           }
         }
       }
+    },
+    "StudentRead": {
+      "description": "Student - ReadObject with additional fields",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Student"
+        },
+        {
+          "type": "object",
+          "properties": {
+              "courses": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PortalCourse"
+                }
+              },
+              "classes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Class"
+                }
+              }
+          }
+        }
+      ]
     },
     "ExaminationMark": {
       "type": "object",
