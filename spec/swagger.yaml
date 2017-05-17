@@ -2885,10 +2885,12 @@
           "type": "string"
         },
         "dateStart" : {
-          "type": "date"
+          "type": "string",
+          "format": "date"
         },
         "dateEnd" : {
-          "type": "date"
+          "type": "string",
+          "format": "date"
         },
         "isMarkRelevant": {
           "type": "boolean",
