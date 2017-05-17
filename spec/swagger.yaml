@@ -1908,6 +1908,14 @@
         "street": {
           "type": "string"
         },
+        "addressLine2": {
+          "type": "string",
+          "maxLength": 255
+        },
+        "postOfficeBox": {
+          "type": "string",
+          "maxLength": 255
+        },
         "zip": {
           "type": "string"
         },
@@ -2705,6 +2713,14 @@
         "street": {
           "type": "string"
         },
+        "addressLine2": {
+          "type": "string",
+          "maxLength": 255
+        },
+        "postOfficeBox": {
+          "type": "string",
+          "maxLength": 255
+        },
         "plz": {
           "type": "string"
         },
@@ -2867,6 +2883,16 @@
         },
         "subject": {
           "type": "string"
+        },
+        "dateStart" : {
+          "type": "date"
+        },
+        "dateEnd" : {
+          "type": "date"
+        },
+        "isMarkRelevant": {
+          "type": "boolean",
+          "default": true
         },
         "rounding": {
           "type": "integer",
