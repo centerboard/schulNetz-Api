@@ -643,7 +643,7 @@
           "parameters": [],
           "responses": {
             "200": {
-              "description": "Subjects",
+              "description": "Classes",
               "schema": {
                 "type": "array",
                 "items": {
@@ -685,11 +685,11 @@
           ],
           "responses": {
             "201": {
-              "description": "Inserted Subject",
+              "description": "Inserted classes",
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/Class"
+                  "$ref": "#/definitions/ActionResponse"
                 }
               }
             },
@@ -727,11 +727,11 @@
           ],
           "responses": {
             "200": {
-              "description": "Class updated",
+              "description": "Classes updated",
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/Class"
+                  "$ref": "#/definitions/ActionResponse"
                 }
               }
             },
@@ -761,7 +761,7 @@
             {
               "name": "id",
               "in": "path",
-              "description": "Id of the subject to be deleted",
+              "description": "Id of the class to be deleted",
               "required": true,
               "type": "string"
             }
@@ -770,7 +770,7 @@
             "200": {
               "description": "Class deleted",
               "schema": {
-                "$ref": "#/definitions/Class"
+                "$ref": "#/definitions/ActionResponse"
               }
             },
             "401": {
@@ -794,14 +794,14 @@
 
       "/portal/courses": {
         "get": {
-          "summary": "Returns the courses in schulNetz",
+          "summary": "Returns the portal courses in schulNetz",
           "tags": [
             "Portal"
           ],
           "parameters": [],
           "responses": {
             "200": {
-              "description": "Subjects",
+              "description": "Portal courses",
               "schema": {
                 "type": "array",
                 "items": {
@@ -824,7 +824,7 @@
           }
         },
         "post": {
-          "summary": "Insert one or multiple courses in schulNetz",
+          "summary": "Insert one or multiple portal courses in schulNetz",
           "tags": [
             "Portal"
           ],
@@ -843,11 +843,11 @@
           ],
           "responses": {
             "201": {
-              "description": "Inserted Subject",
+              "description": "Inserted portal course",
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/PortalCourse"
+                  "$ref": "#/definitions/ActionResponse"
                 }
               }
             },
@@ -866,7 +866,7 @@
           }
         },
         "put": {
-          "summary": "Update course in schulNetz",
+          "summary": "Update portal course in schulNetz",
           "tags": [
             "Portal"
           ],
@@ -885,11 +885,11 @@
           ],
           "responses": {
             "200": {
-              "description": "Course updated",
+              "description": "Portal courses updated",
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/PortalCourse"
+                  "$ref": "#/definitions/ActionResponse"
                 }
               }
             },
@@ -910,7 +910,7 @@
       },
       "/portal/courses/{id}": {
         "delete": {
-          "summary": "Delete a course in schulNetz",
+          "summary": "Delete a portal course in schulNetz",
           "description": "",
           "tags": [
             "Portal"
@@ -919,7 +919,7 @@
             {
               "name": "id",
               "in": "path",
-              "description": "Id of the course to be deleted",
+              "description": "Id of the portal course to be deleted",
               "required": true,
               "type": "string"
             }
@@ -928,7 +928,7 @@
             "200": {
               "description": "PortalCourse deleted",
               "schema": {
-                "$ref": "#/definitions/PortalCourse"
+                "$ref": "#/definitions/ActionResponse"
               }
             },
             "401": {
@@ -1005,7 +1005,7 @@
                   "schema": {
                     "type": "array",
                     "items": {
-                      "$ref": "#/definitions/CourseEvent"
+                      "$ref": "#/definitions/ActionResponse"
                     }
                   }
                 },
@@ -1047,7 +1047,7 @@
                   "schema": {
                     "type": "array",
                     "items": {
-                      "$ref": "#/definitions/CourseEvent"
+                      "$ref": "#/definitions/ActionResponse"
                     }
                   }
                 },
@@ -1086,7 +1086,7 @@
                 "200": {
                   "description": "Event deleted",
                   "schema": {
-                      "$ref": "#/definitions/CourseEvent"
+                      "$ref": "#/definitions/ActionResponse"
                   }
                 },
                 "401": {
@@ -1117,7 +1117,7 @@
           "parameters": [],
           "responses": {
             "200": {
-              "description": "Subjects",
+              "description": "Profiles",
               "schema": {
                 "type": "array",
                 "items": {
@@ -1163,7 +1163,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/Profile"
+                  "$ref": "#/definitions/ActionResponse"
                 }
               }
             },
@@ -1205,7 +1205,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/Profile"
+                  "$ref": "#/definitions/ActionResponse"
                 }
               }
             },
@@ -1244,7 +1244,7 @@
             "200": {
               "description": "Profile deleted",
               "schema": {
-                "$ref": "#/definitions/Profile"
+                "$ref": "#/definitions/ActionResponse"
               }
             },
             "401": {
@@ -1320,7 +1320,7 @@
                   "schema": {
                     "type": "array",
                     "items": {
-                      "$ref": "#/definitions/Subject"
+                      "$ref": "#/definitions/ActionResponse"
                     }
                   }
                 },
@@ -1362,7 +1362,7 @@
                   "schema": {
                     "type": "array",
                     "items": {
-                      "$ref": "#/definitions/Subject"
+                      "$ref": "#/definitions/ActionResponse"
                     }
                   }
                 },
@@ -1401,7 +1401,7 @@
                 "200": {
                   "description": "Subject deleted",
                   "schema": {
-                    "$ref": "#/definitions/Subject"
+                    "$ref": "#/definitions/ActionResponse"
                   }
                 },
                 "401": {
@@ -1478,7 +1478,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/Room"
+                  "$ref": "#/definitions/ActionResponse"
                 }
               }
             },
@@ -1520,7 +1520,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/Room"
+                  "$ref": "#/definitions/ActionResponse"
                 }
               }
             },
@@ -1559,10 +1559,7 @@
             "200": {
               "description": "Room deleted",
               "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Room"
-                }
+                "$ref": "#/definitions/ActionResponse"
               }
             },
             "401": {
@@ -1694,7 +1691,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/Student"
+                  "$ref": "#/definitions/ActionResponse"
                 }
               }
             },
@@ -1736,7 +1733,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/Student"
+                  "$ref": "#/definitions/ActionResponse"
                 }
               }
             },
@@ -1775,7 +1772,7 @@
             "200": {
               "description": "Student deleted",
               "schema": {
-                "$ref": "#/definitions/Teacher"
+                "$ref": "#/definitions/ActionResponse"
               }
             },
             "401": {
@@ -1851,7 +1848,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/Teacher"
+                  "$ref": "#/definitions/ActionResponse"
                 }
               }
             },
@@ -1893,7 +1890,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/Teacher"
+                  "$ref": "#/definitions/ActionResponse"
                 }
               }
             },
@@ -1932,7 +1929,7 @@
             "200": {
               "description": "Teacher deleted",
               "schema": {
-                "$ref": "#/definitions/Teacher"
+                "$ref": "#/definitions/ActionResponse"
               }
             },
             "401": {
@@ -3033,19 +3030,37 @@
           }
         }
       },
-      "PostResponse": {
+      "ActionResponse": {
         "required": [
           "id",
-          "type"
+          "status"
         ],
         "properties": {
           "id": {
             "type": "string"
           },
-          "type": {
+          "status": {
+            "type": "string",
+            "description": "<ul><li>0: OK</li><li>Exxx: Error</li><li>Wxxx: Warning</li></ul>"
+          },
+          "message": {
             "type": "string"
           }
         }
-      }
+      },
+      "PostResponse": {
+         "required": [
+           "id",
+           "type"
+         ],
+         "properties": {
+           "id": {
+             "type": "string"
+           },
+           "type": {
+             "type": "string"
+           }
+         }
+       }
     }
   }
