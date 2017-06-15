@@ -4,36 +4,36 @@ info:
   title: schulNetz Rest API
   description: |
 
-    ## Introduction
+    # Introduction
 
     This document specifies the webservices provided by schulNetz. This API is built using REST principles, which ensures predictable URLs that makes writing applications easy.
 
     The services are structured by the following categories:
 
-      * __Configuration__: Interface for the basic configuration of the schulNetz instance
-      * __Courses and Classes__: Interface for the course structure
-      * __eSchool__: Interface for eSchool offers and registrations
-      * __Me__: Interface for retrieving data specific to the user
-      * __Persons__: Interface for the persons
-      * __Portal__: Interface for portal-instance specific data
-      * __Timetable__: Interface for events
-      * __Rooms__: Interface for the rooms
+      * __Configuration__ : Interface for the basic configuration of the schulNetz instance
+      * __Courses and Classes__ : Interface for the course structure
+      * __eSchool__ : Interface for eSchool offers and registrations
+      * __Me__ : Interface for retrieving data specific to the user
+      * __Persons__ : Interface for the persons
+      * __Portal__ : Interface for portal-instance specific data
+      * __Timetable__ : Interface for events
+      * __Rooms__ : Interface for the rooms
 
 
 
 
-    ## Query Parameters Details
+    # Query Parameters Details
 
     Most GET services support additional query parameters to sort, filter and paginate the list of results.
 
-    # Sorting
+    ## Sorting
 
     The result of most GET services can be sorted by any of the corresponding object properties.
 
       * Sorting order is specified by the left to right order of the properties listed
       * Sorting direction defaults to ascending and can be changed to descending by using a minus sign (-) prefix on the requested field.
 
-    Example:
+    _Example_ :
 
     `/rooms?sort=-capacity,token`
 
@@ -49,11 +49,11 @@ info:
 
     In this syntax:
 
-      * `property` — the name of the object property to filter on.
-      * `operator` — defines the type of filter match to use. See the list of operators for more details.
-      * `expression` — states the values to be included in or excluded from the results.
+      * `property`: the name of the object property to filter on.
+      * `operator` : defines the type of filter match to use. See the list of operators for more details.
+      * `expression` : states the values to be included in or excluded from the results.
 
-    _Operators_
+    ### Operators
 
     The operators must be URL-encoded in order to be included in URL query strings.
 
@@ -61,38 +61,29 @@ info:
 
     | Operator | URL Encoded Form | Description | Examples |
     | -------- | ----------- | -------- | -------- |
-    | == | %3D%3D | Equals | Return rooms where the capacity is exactly 50 persons: `/rooms?filter=capacity%3D%3D50` |
-    |  |  |  | Retun students where the last name is Meier: `/persons/students?filter=lastName%3D%3DMeier` |
+    | == | %3D%3D | Equals | Return rooms where the capacity is exactly 50 persons:</br>`/rooms?filter=capacity%3D%3D50`</br>Retun students where the last name is Meier:</br>`/persons/students?filter=lastName%3D%3DMeier` |
     |  |  |  |  |
-    | != | !%3D | Does not equal | Return rooms where the capacity is not 50 persons: `/rooms?filter=capacity!%3D50` |
-    |  |  |  | Return students where the last name is not Meier: `/persons/students?filter=lastName!%3DMeier` |
-    |  |  |  |  |
-    | =~ | %3D~ | Equals | Retun students where the last name contains Meier: `/persons/students?filter=lastName%3D~Meier` |
-    |  |  |  |  |
-    | !~ | !~ | Does not equal | Return students where the last name does not conatin Meier: `/persons/students?filter=lastName!~Meier` |
-    |  |  |  |  |
-    | > | %3E | Greater than | Return rooms where the capacity is strictly greater than 50 persons: `/rooms?filter=capacity%3E50` |
-    |  |  |  |  |
-    | < | %3C | Less than | Return rooms where the capacity is strictly less than 50 persons: `/rooms?filter=capacity%3C50` |
-    |  |  |  |  |
-    | >= | %3E%3D | Greater than or equal to | Return rooms where the capacity is 50 persons or more: `/rooms?filter=capacity%3E%3D50` |
-    |  |  |  |  |
-    | < = | %3C%3D | Less than or equal to | Return rooms where the capacity is 50 persons or less: `/rooms?filter=capacity%3C%3D50` |
-    |  |  |  |  |
+    | != | !%3D | Does not equal | Return rooms where the capacity is not 50 persons:</br>`/rooms?filter=capacity!%3D50`</br>Return students where the last name is not Meier:</br>`/persons/students?filter=lastName!%3DMeier` |
+    | =~ | %3D~ | Equals | Retun students where the last name contains Meier:</br>`/persons/students?filter=lastName%3D~Meier` |
+    | !~ | !~ | Does not equal | Return students where the last name does not conatin Meier:</br>`/persons/students?filter=lastName!~Meier` |
+    | > | %3E | Greater than | Return rooms where the capacity is strictly greater than 50 persons:</br>`/rooms?filter=capacity%3E50` |
+    | < | %3C | Less than | Return rooms where the capacity is strictly less than 50 persons:</br>`/rooms?filter=capacity%3C50` |
+    | >= | %3E%3D | Greater than or equal to | Return rooms where the capacity is 50 persons or more:</br>`/rooms?filter=capacity%3E%3D50` |
+    | < = | %3C%3D | Less than or equal to | Return rooms where the capacity is 50 persons or less:</br>`/rooms?filter=capacity%3C%3D50` |
 
-    _Expression_
+    ### Expression
 
       * Characters such as & must be url-encoded in the usual way.
       * The semicolon and comma must be backslash escaped when they appear in an expression.
 
-    _Combining filters_
+    ### Combining filters
 
     Filters can be combined using `OR` and `AND` boolean logic.
 
       * `OR`: The `OR` operator is defined using a comma `,`. It takes precedence over the `AND` operator.
       * `AND`: The `AND` operator is defined using a semi-colon `;`. It is preceded by the `OR` operator.
 
-    Examples:
+    _Examples_ :
 
     Return the rooms with capacity for 15 to 30 persons:
     `/rooms?filter=capacity%3C%3D15;capacity%3E%3D30`
