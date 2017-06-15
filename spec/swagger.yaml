@@ -19,9 +19,6 @@ info:
       * __Timetable__ : Interface for events
       * __Rooms__ : Interface for the rooms
 
-
-
-
     # Query Parameters Details
 
     Most GET services support additional query parameters to sort, filter and paginate the list of results.
@@ -154,13 +151,26 @@ responses:
 paths:
   /config/profiles:
     get:
-      summary: Returns the profiles available in schulNetz
+      summary: List profiles
+      description: Returns the profiles available in schulNetz
       tags:
         - Configuration
-      parameters: []
+      parameters:
+        - name: sort
+          in: query
+          description: Sort the profiles. For more information, refer to the section [Query Parameters Details](#section/Query-Parameters-Details)
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: Filter the profiles. For more information, refer to the section [Query Parameters Details](#section/Query-Parameters-Details)
+          required: false
+          type: string
       responses:
         '200':
-          description: Profiles
+          description: List of profiles
           schema:
             type: array
             items:
@@ -174,7 +184,11 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
     post:
-      summary: Insert one or multiple profiles in schulNetz
+      summary: Create profiles
+      description: |
+        Insert one or multiple profiles in schulNetz.
+
+        The value of the `id` property will be ignored. The ids of the created profiles will be returned in the `Action Reponse`, in the same order as the submitted array of profiles.
       tags:
         - Configuration
       parameters:
@@ -186,8 +200,11 @@ paths:
             items:
               $ref: '#/definitions/Profile'
       responses:
-        '201':
-          description: Inserted Profile
+        201:
+          description: |
+            Profiles created
+
+            The array of ActionResponses is returned in the same order as the array ob submitted profiles, and contains information for each individual insert. If the insert was successfull, the id of the new profile is returned.
           schema:
             type: array
             items:
@@ -201,7 +218,8 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
     put:
-      summary: Update profile in schulNetz
+      summary: Update profiles
+      description: Update one or multiple profiles in schulNetz
       tags:
         - Configuration
       parameters:
@@ -214,7 +232,10 @@ paths:
               $ref: '#/definitions/Profile'
       responses:
         '200':
-          description: profile updated
+          description: |
+            Profiles updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted profiles, and contains information for each individual update.
           schema:
             type: array
             items:
@@ -229,8 +250,8 @@ paths:
           $ref: '#/responses/responseDefault'
   '/config/profiles/{id}':
     delete:
-      summary: Delete a profile in schulNetz
-      description: ''
+      summary: Delete a profile
+      description: Delete an existing profile in schulNetz
       tags:
         - Configuration
       parameters:
@@ -254,15 +275,38 @@ paths:
           $ref: '#/responses/response429'
         default:
           $ref: '#/responses/responseDefault'
+  /config/semester:
+      get:
+        summary: List semester
+        description: Returns the semesters of the schulNetz instance
+        operationId: configSemesterGet
+        tags:
+          - Configuration
+        responses:
+          '200':
+            description: List of semester
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/Semester'
+          '401':
+            $ref: '#/responses/response401'
+          '403':
+            $ref: '#/responses/response403'
+          '429':
+            $ref: '#/responses/response429'
+          default:
+            $ref: '#/responses/responseDefault'
   /config/settings:
     get:
-      summary: Returns all settings
+      summary: List settings
+      description: Returns the settings of the schulNetz instance
       operationId: configSettingsGet
       tags:
         - Configuration
       responses:
         '200':
-          description: Array of configuration values
+          description: List of configuration values
           schema:
             type: array
             items:
@@ -277,13 +321,26 @@ paths:
           $ref: '#/responses/responseDefault'
   /config/subjects:
     get:
-      summary: Returns the subjects available in schulNetz
+      summary: List subjects
+      description: Returns the subjects available in schulNetz
       tags:
         - Configuration
-      parameters: []
+      parameters:
+      - name: sort
+        in: query
+        description: Sort the subjects. For more information, refer to the section [Query Parameters Details](#section/Query-Parameters-Details)
+        required: false
+        type: array
+        items:
+          type: string
+      - name: filter
+        in: query
+        description: Filter the subjects. For more information, refer to the section [Query Parameters Details](#section/Query-Parameters-Details)
+        required: false
+        type: string
       responses:
         '200':
-          description: Subjects
+          description: List of subjects
           schema:
             type: array
             items:
@@ -297,7 +354,11 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
     post:
-      summary: Insert a new subject in schulNetz
+      summary: Create subjects
+      description: |
+        Insert one or multiple subjects in schulNetz.
+
+        The value of the `id` property will be ignored. The ids of the created subjects will be returned in the `Action Reponse`, in the same order as the submitted array of subjects.
       tags:
         - Configuration
       parameters:
@@ -310,7 +371,9 @@ paths:
               $ref: '#/definitions/Subject'
       responses:
         '201':
-          description: Inserted Subject
+          description: |
+            Subjects created
+            The array of ActionResponses is returned in the same order as the array ob submitted subjects, and contains information for each individual insert. If the insert was successfull, the id of the new subject is returned.
           schema:
             type: array
             items:
@@ -324,7 +387,8 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
     put:
-      summary: Update a subject in schulNetz
+      summary: Update subjects
+      description: Update one or multiple subjects in schulNetz
       tags:
         - Configuration
       parameters:
@@ -337,7 +401,10 @@ paths:
               $ref: '#/definitions/Subject'
       responses:
         '200':
-          description: Subject updated
+          description: |
+            Subjects updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted subjects, and contains information for each individual update.
           schema:
             type: array
             items:
@@ -352,8 +419,8 @@ paths:
           $ref: '#/responses/responseDefault'
   '/config/subjects/{id}':
     delete:
-      summary: Delete a subject in schulNetz
-      description: ''
+      summary: Delete a subjects
+      description: Delete an existing subject in schulNetz
       tags:
         - Configuration
       parameters:
@@ -379,7 +446,8 @@ paths:
           $ref: '#/responses/responseDefault'
   /config/translations:
     get:
-      summary: Returns all transaltions
+      summary: List translations
+      description: Returns the translations available in schulNetz
       operationId: configTranslationsGet
       tags:
         - Configuration
@@ -400,10 +468,23 @@ paths:
           $ref: '#/responses/responseDefault'
   /classes:
     get:
-      summary: Returns the classes in schulNetz
+      summary: List classes
+      description: Returns the classes available in schulNetz
       tags:
         - Courses and Classes
-      parameters: []
+      parameters:
+      - name: sort
+        in: query
+        description: Sort the classes. For more information, refer to the section [Query Parameters Details](#section/Query-Parameters-Details)
+        required: false
+        type: array
+        items:
+          type: string
+      - name: filter
+        in: query
+        description: Filter  the classes. For more information, refer to the section [Query Parameters Details](#section/Query-Parameters-Details)
+        required: false
+        type: string
       responses:
         '200':
           description: Classes
@@ -420,7 +501,11 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
     post:
-      summary: Insert one or multiple classes in schulNetz
+      summary: Create classes
+      description: |
+        Insert one or multiple classes in schulNetz.
+
+        The value of the `id` property will be ignored. The ids of the created classes will be returned in the `Action Reponse`, in the same order as the submitted array of classes.
       tags:
         - Courses and Classes
       parameters:
@@ -433,7 +518,10 @@ paths:
               $ref: '#/definitions/Class'
       responses:
         '201':
-          description: Inserted classes
+          description: |
+            Classes created
+
+            The ActionResponses is returned in the same order as the array ob submitted classes, and contains information for each individual insert. If the insert was successfull, the id of the new class is returned.
           schema:
             type: array
             items:
@@ -447,7 +535,13 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
     put:
-      summary: Update a class in schulNetz
+      summary: Update classes
+      description: |
+        Update one or multiple classes in schulNetz<br>
+        <br>
+        `profileTokens` : if a referenced profile is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
+        <br>
+        `teacherTokens` : if a referenced teacher is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
       tags:
         - Courses and Classes
       parameters:
@@ -460,7 +554,10 @@ paths:
               $ref: '#/definitions/Class'
       responses:
         '200':
-          description: Classes updated
+          description: |
+            Classes updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted classes, and contains information for each individual update.
           schema:
             type: array
             items:
@@ -475,8 +572,8 @@ paths:
           $ref: '#/responses/responseDefault'
   '/classes/{id}':
     delete:
-      summary: Delete a class in schulNetz
-      description: ''
+      summary: Delete a class
+      description: Delete an existing class in schulNetz
       tags:
         - Courses and Classes
       parameters:
@@ -486,7 +583,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        200:
           description: Class deleted
           schema:
             $ref: '#/definitions/ActionResponse'
@@ -500,6 +597,8 @@ paths:
           $ref: '#/responses/response429'
         default:
           $ref: '#/responses/responseDefault'
+
+
   /eschool/courses:
     get:
       summary: Returns all eSchool courses including the offers (infoEvents and singleExecutions)
@@ -1404,6 +1503,27 @@ paths:
         required: false
         type: string
 definitions:
+  Semester:
+    type: object
+    required:
+      - id
+      - token
+      - name
+    properties:
+      id:
+        type: string
+      token:
+        type: string
+      name:
+        type: string
+      schoolYear:
+        type: string
+      firstDay:
+        type: string
+        format: date
+      lastDay:
+        type: string
+        format: date
   Student:
     type: object
     required:
@@ -2064,7 +2184,7 @@ definitions:
     type: object
     required:
       - name
-      - semester
+      - startSemesterId
     properties:
       id:
         type: string
@@ -2072,7 +2192,7 @@ definitions:
         type: string
       name:
         type: string
-      semester:
+      startSemesterId:
         type: string
       remark:
         type: string
