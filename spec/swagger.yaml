@@ -39,7 +39,7 @@ info:
 
     Retrieves a list of rooms in descending order of capacity. Rooms with the same capacity are sorted by the token.
 
-    # Filtering
+    ## Filtering
 
     The result of most GET services can be filtered by any of the corresponding object properties.
 
@@ -62,7 +62,6 @@ info:
     | Operator | URL Encoded Form | Description | Examples |
     | -------- | ----------- | -------- | -------- |
     | == | %3D%3D | Equals | Return rooms where the capacity is exactly 50 persons:</br>`/rooms?filter=capacity%3D%3D50`</br>Retun students where the last name is Meier:</br>`/persons/students?filter=lastName%3D%3DMeier` |
-    |  |  |  |  |
     | != | !%3D | Does not equal | Return rooms where the capacity is not 50 persons:</br>`/rooms?filter=capacity!%3D50`</br>Return students where the last name is not Meier:</br>`/persons/students?filter=lastName!%3DMeier` |
     | =~ | %3D~ | Equals | Retun students where the last name contains Meier:</br>`/persons/students?filter=lastName%3D~Meier` |
     | !~ | !~ | Does not equal | Return students where the last name does not conatin Meier:</br>`/persons/students?filter=lastName!~Meier` |
