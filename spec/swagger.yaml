@@ -86,6 +86,28 @@ info:
 
     Return all students where the first name contains Hans, and the last name is Meier or Meyer:
     `/perons/students?filter=firstName%3D~Hans;lastName%3D%3DMeier,lastName%3D%3DMeyer`
+
+    ## Pagination
+
+    The result of most GET services can be paginated with the query parameters `per_page` and `page` to limit the number of datasets in the result.
+
+      * `per_page` indicates how many results will be returned.
+      * `page` is used to navigate through the pages, the first page is `1`
+
+    If one of these two parameters is missing, or is not numeric, the unpaginated list of results will be returned.
+
+    If the results are paginated, the response header will contain two additional entries:
+
+      * `X-Total-Count` : indicates the total count of datasets for the GET service, with respect to filtering if the corresponding query parameter is set.
+      * `Link` : provides links for the navigation through the pages. URLs for the next page (`rel="next"`) and the last page (`rel="last"`) are set if the requested page is not the last. URLs for the first page (`rel="first"`) and the previous page (`rel="previous"`) are set if the requested page is not the first.
+
+    ## Specifiying the semester
+
+    Some properties of some objects are semester-bound, for exmaple the courses of a student. The semester to be used for these properties can be specified by the request parameter `semid`.
+    The provided value has to be a valid `id` of a `semester` object.
+    If no semester is specified, or the provided value is not valid, the current active semester of the instance will be used.
+
+
   contact:
     name: Centerboard AG
     email: apiteam@centerboard.ch
@@ -158,14 +180,24 @@ paths:
       parameters:
         - name: sort
           in: query
-          description: Sort the profiles. For more information, refer to the section [Query Parameters Details](#section/Query-Parameters-Details)
+          description: Sort the profiles. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
           required: false
           type: array
           items:
             type: string
         - name: filter
           in: query
-          description: Filter the profiles. For more information, refer to the section [Query Parameters Details](#section/Query-Parameters-Details)
+          description: Filter the profiles. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
           required: false
           type: string
       responses:
@@ -282,6 +314,29 @@ paths:
         operationId: configSemesterGet
         tags:
           - Configuration
+        parameters:
+        - name: sort
+          in: query
+          description: Sort the semester. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: Filter the semester. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: Paginate the list of semester. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: Paginate the list of semester. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
         responses:
           '200':
             description: List of semester
@@ -328,14 +383,24 @@ paths:
       parameters:
       - name: sort
         in: query
-        description: Sort the subjects. For more information, refer to the section [Query Parameters Details](#section/Query-Parameters-Details)
+        description: Sort the subjects. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
         required: false
         type: array
         items:
           type: string
       - name: filter
         in: query
-        description: Filter the subjects. For more information, refer to the section [Query Parameters Details](#section/Query-Parameters-Details)
+        description: Filter the subjects. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
+        required: false
+        type: string
+      - name: page
+        in: query
+        description: Paginate the list of subjects. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+        required: false
+        type: string
+      - name: per_page
+        in: query
+        description: Paginate the list of subjects. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
         required: false
         type: string
       responses:
@@ -475,14 +540,24 @@ paths:
       parameters:
       - name: sort
         in: query
-        description: Sort the classes. For more information, refer to the section [Query Parameters Details](#section/Query-Parameters-Details)
+        description: Sort the classes. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
         required: false
         type: array
         items:
           type: string
       - name: filter
         in: query
-        description: Filter  the classes. For more information, refer to the section [Query Parameters Details](#section/Query-Parameters-Details)
+        description: Filter  the classes. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
+        required: false
+        type: string
+      - name: page
+        in: query
+        description: Paginate the list of classes. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+        required: false
+        type: string
+      - name: per_page
+        in: query
+        description: Paginate the list of classes. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
         required: false
         type: string
       responses:
@@ -960,7 +1035,34 @@ paths:
       summary: Returns the students in schulNetz
       tags:
         - Persons
-      parameters: []
+      parameters:
+        - name: sort
+          in: query
+          description: Sort the profiles. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: Filter the profiles. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+        - name: semid
+          in: query
+          description: The semester to be used to compute the `courseIds` and `classIds`, refer to the section [Semid](#section/Query-Parameters-Details)
+          required: false
+          type: integer
       responses:
         '200':
           description: 'Successful: Array of students'
@@ -1368,7 +1470,29 @@ paths:
       summary: Returns the rooms available in schulNetz
       tags:
         - Rooms
-      parameters: []
+      parameters:
+        - name: sort
+          in: query
+          description: Sort the profiles. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: Filter the profiles. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
       responses:
         '200':
           description: Rooms
