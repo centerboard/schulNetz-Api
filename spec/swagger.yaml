@@ -117,6 +117,11 @@ info:
     backgroundColor: '#FFFFFF'
 host: xyz.schul-netz.com
 basePath: /mandant/rest/v1
+tags:
+  - name: Configuration
+    description: |
+      This interface exposes the basic configuration of the schulNetz instance:
+        * `Profiles`
 securityDefinitions:
   basicAuth:
     type: basic
@@ -1060,7 +1065,7 @@ paths:
           type: string
         - name: semid
           in: query
-          description: The semester to be used to compute the `courseIds` and `classIds`, refer to the section [Semid](#section/Query-Parameters-Details)
+          description: The semester to be used to compute the `courseIds` and `classIds`, refer to the section [Semid](#section/Query-Parameters-Details/Specifiying-the-semester)
           required: false
           type: integer
       responses:
