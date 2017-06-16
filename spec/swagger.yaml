@@ -287,7 +287,7 @@ paths:
           $ref: '#/responses/responseDefault'
   '/config/profiles/{id}':
     delete:
-      summary: Delete a profile
+      summary: Delete profile
       description: Delete an existing profile in schulNetz
       tags:
         - Configuration
@@ -489,7 +489,7 @@ paths:
           $ref: '#/responses/responseDefault'
   '/config/subjects/{id}':
     delete:
-      summary: Delete a subjects
+      summary: Delete subject
       description: Delete an existing subject in schulNetz
       tags:
         - Configuration
@@ -652,7 +652,7 @@ paths:
           $ref: '#/responses/responseDefault'
   '/classes/{id}':
     delete:
-      summary: Delete a class
+      summary: Delete class
       description: Delete an existing class in schulNetz
       tags:
         - Courses and Classes
@@ -1037,7 +1037,8 @@ paths:
         type: string
   /persons/students:
     get:
-      summary: Returns the students in schulNetz
+      summary: List students
+      description: Returns the students in schulNetz
       tags:
         - Persons
       parameters:
@@ -1070,7 +1071,7 @@ paths:
           type: integer
       responses:
         '200':
-          description: 'Successful: Array of students'
+          description: List of students
           schema:
             type: array
             items:
@@ -1084,10 +1085,20 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
     post:
-      summary: Insert one or multiple students in schulNetz
+      summary: Create students
+      description: |
+        Insert one or multiple students in schulNetz
+
+        The value of the id property will be ignored. The ids of the created classes will be returned in the Action Reponse, in the same order as the submitted array of profiles.
+
       tags:
         - Persons
       parameters:
+        - name: semid
+          in: query
+          description: The semester to be used to insert the `courseIds` and `classIds`, refer to the section [Semid](#section/Query-Parameters-Details/Specifiying-the-semester)
+          required: false
+          type: integer
         - in: body
           name: body
           required: false
@@ -1097,7 +1108,10 @@ paths:
               $ref: '#/definitions/Student'
       responses:
         '201':
-          description: Inserted Student
+          description: |
+            Students created
+
+            The array of ActionResponses is returned in the same order as the array ob submitted students, and contains information for each individual insert. If the insert was successfull, the id of the new student is returned.
           schema:
             type: array
             items:
@@ -1111,7 +1125,8 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
     put:
-      summary: Update student in schulNetz
+      summary: Update students
+      description: Update student in schulNetz
       tags:
         - Persons
       parameters:
@@ -1124,7 +1139,10 @@ paths:
               $ref: '#/definitions/Student'
       responses:
         '200':
-          description: Student updated
+          description: |
+            Students updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted students, and contains information for each individual update.
           schema:
             type: array
             items:
@@ -1139,8 +1157,8 @@ paths:
           $ref: '#/responses/responseDefault'
   '/persons/students/{id}':
     delete:
-      summary: Delete a student in schulNetz
-      description: ''
+      summary: Delete student
+      description: Delete a student in schulNetz
       tags:
         - Persons
       parameters:
@@ -1166,7 +1184,8 @@ paths:
           $ref: '#/responses/responseDefault'
   /persons/teachers:
     get:
-      summary: Returns the teachers in schulNetz
+      summary: List teachers
+      description: Returns the teachers in schulNetz
       tags:
         - Persons
       parameters: []
@@ -1186,7 +1205,11 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
     post:
-      summary: Insert one or multiple teachers in schulNetz
+      summary: Create teachers
+      description: |
+        Insert one or multiple teachers in schulNetz
+
+        The value of the id property will be ignored. The ids of the created teachers will be returned in the Action Reponse, in the same order as the submitted array of teachers.
       tags:
         - Persons
       parameters:
@@ -1199,7 +1222,10 @@ paths:
               $ref: '#/definitions/Teacher'
       responses:
         '201':
-          description: Inserted Teacher
+          description: |
+            Teacher created
+
+            The array of ActionResponses is returned in the same order as the array ob submitted teachers, and contains information for each individual insert. If the insert was successfull, the id of the new teacher is returned.
           schema:
             type: array
             items:
@@ -1213,7 +1239,8 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
     put:
-      summary: Update teacher in schulNetz
+      summary: Update teachers
+      description: Update teacher in schulNetz
       tags:
         - Persons
       parameters:
@@ -1226,7 +1253,10 @@ paths:
               $ref: '#/definitions/Teacher'
       responses:
         '200':
-          description: teacher updated
+          description: |
+            Teachers updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted teachers, and contains information for each individual update.
           schema:
             type: array
             items:
@@ -1241,8 +1271,8 @@ paths:
           $ref: '#/responses/responseDefault'
   '/persons/teachers/{id}':
     delete:
-      summary: Delete a teacher in schulNetz
-      description: ''
+      summary: Delete teacher
+      description: Delete a teacher in schulNetz
       tags:
         - Persons
       parameters:
