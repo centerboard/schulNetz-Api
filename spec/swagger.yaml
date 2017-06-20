@@ -1044,24 +1044,24 @@ paths:
       parameters:
         - name: sort
           in: query
-          description: Sort the profiles. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
+          description: Sort the students. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
           required: false
           type: array
           items:
             type: string
         - name: filter
           in: query
-          description: Filter the profiles. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
+          description: Filter the students. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
           required: false
           type: string
         - name: page
           in: query
-          description: Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          description: Paginate the list of students. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
           required: false
           type: string
         - name: per_page
           in: query
-          description: Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          description: Paginate the list of students. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
           required: false
           type: string
         - name: semid
@@ -1089,7 +1089,11 @@ paths:
       description: |
         Insert one or multiple students in schulNetz
 
-        The value of the id property will be ignored. The ids of the created classes will be returned in the Action Reponse, in the same order as the submitted array of profiles.
+        The value of the id property will be ignored. The ids of the created students will be returned in the Action Reponse, in the same order as the submitted array of students.
+
+        The array of courses is a readonly attribute of a student. The assignation of a student to a course is done by assigning the student to a class which is assigned to this course.
+
+        When writing the class-assignations (regular or additional classes), if the id and token do not match, the link will not be written and a warning will be returned. If no other error occured, other supplied data will be written.
 
       tags:
         - Persons
@@ -1143,6 +1147,10 @@ paths:
             Students updated
 
             The array of ActionResponses is returned in the same order as the array ob submitted students, and contains information for each individual update.
+
+            The array of courses is a readonly attribute of a student. The assignation of a student to a course is done by assigning the student to a class which is assigned to this course.
+
+            When writing the class-assignations (regular or additional classes), if the id and token do not match, the link will not be written and a warning will be returned. If no other error occured, other supplied data will be written.
           schema:
             type: array
             items:
@@ -1736,14 +1744,40 @@ definitions:
         type: string
       profil2:
         type: string
-      portalCourseIds:
+      courseIds:
         type: array
         items:
           type: string
-      classIds:
+        readOnly: true
+        description: to assign courses, assign the student to the corresponding class
+      courseTokens:
         type: array
         items:
           type: string
+        readOnly: true
+        description: to assign courses, assign the student to the corresponding class
+      regularClasses:
+        type: array
+        items:
+          $ref: '#/definitions/ClassRef'
+      additionalClasses:
+        type: array
+        items:
+          $ref: '#/definitions/ClassRef'
+  ClassRef:
+      type: object
+      required:
+        - id
+        - token
+        - semester
+      properties:
+        id:
+          type: string
+        token:
+          type: string
+        semester:
+          type: integer
+          format: int32
   ExaminationMark:
     type: object
     required:
@@ -2274,8 +2308,6 @@ definitions:
       postOfficeBox:
         type: string
         maxLength: 255
-      plz:
-        type: string
       zip:
         type: string
       city:
@@ -2292,10 +2324,26 @@ definitions:
         type: array
         items:
           type: string
+        description: |
+          courses that the teacher teaches in the defined semester
+      courseTokens:
+        type: array
+        items:
+          type: string
+        readOnly: true
+        description: to assign courses, use the property courseIds
       classIds:
         type: array
         items:
           type: string
+        description: |
+          classes of which the teacher is class-teacher
+      classTokens:
+        type: array
+        items:
+          type: string
+        readOnly: true
+        description: to assign classes, use the property classIds
   Room:
     type: object
     required:
@@ -2351,11 +2399,23 @@ definitions:
         type: string
       name:
         type: string
+      type:
+        type: string
       startSemesterId:
         type: string
       remark:
         type: string
+      profileIds:
+        type: array
+        items:
+          type: string
       profileTokens:
+        type: array
+        items:
+          type: string
+        readOnly: true
+        description: to assign profiles, use the property profileIds
+      teacherIds:
         type: array
         items:
           type: string
@@ -2363,6 +2423,8 @@ definitions:
         type: array
         items:
           type: string
+        readOnly: true
+        description: to assign teachers, use the property teacherIds
   PortalCourse:
     type: object
     required:
@@ -2391,12 +2453,24 @@ definitions:
       rounding:
         type: integer
         format: int32
+      courseType:
+        type: string
+      studentIds:
+        type: array
+        items:
+          type: string
+      studentNames:
+        type: array
+        items:
+          type: string
+      teacherIds:
+        type: array
+        items:
+          type: string
       teacherTokens:
         type: array
         items:
           type: string
-      courseType:
-        type: string
   CourseEvent:
     type: object
     properties:
