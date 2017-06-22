@@ -1506,6 +1506,11 @@ paths:
               type: array
               items:
                 type: string
+          - name: id
+            in: path
+            description: Id of the student
+            required: true
+            type: string
         responses:
           '200':
             description: Portal courses updated
