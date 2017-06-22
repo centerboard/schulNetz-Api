@@ -1406,6 +1406,57 @@ paths:
           $ref: '#/responses/response429'
         default:
           $ref: '#/responses/responseDefault'
+  /portal/students/{id}/courses:
+      get:
+        summary: List portal-courses from students
+        description: Returns the PortalCourses of a students in the specified Semester.
+        tags:
+          - Portal
+        parameters: []
+        responses:
+          '200':
+            description: List of PortalCourses
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/PortalCourse'
+          '401':
+            $ref: '#/responses/response401'
+          '403':
+            $ref: '#/responses/response403'
+          '429':
+            $ref: '#/responses/response429'
+          default:
+            $ref: '#/responses/responseDefault'
+      put:
+        summary: Update students portal-courses
+        description: |
+          Updates the PortalCourses of a student in the specified semester.
+
+          An array of PortalCourse-Ids has to be submitted, not an array of acutal potal-courses.
+        tags:
+          - Portal
+        parameters:
+          - in: body
+            name: body
+            required: false
+            schema:
+              type: array
+              items:
+                type: string
+        responses:
+          '200':
+            description: Portal courses updated
+            schema:
+                $ref: '#/definitions/ActionResponse'
+          '401':
+            $ref: '#/responses/response401'
+          '403':
+            $ref: '#/responses/response403'
+          '429':
+            $ref: '#/responses/response429'
+          default:
+            $ref: '#/responses/responseDefault'
   /timetable/courseEvents:
     get:
       summary: Returns the events (courseEvents) available in schulNetz
@@ -2439,8 +2490,12 @@ definitions:
         type: string
       semester:
         type: string
-      subject:
+      subjectId:
         type: string
+      subjectToken:
+        type: string
+        readOnly: true
+        description: to update the subject, use the property subjectId
       dateStart:
         type: string
         format: date
