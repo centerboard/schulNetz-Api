@@ -1369,8 +1369,9 @@ paths:
               $ref: '#/definitions/PortalCourse'
       responses:
         '201':
-          summary: Portal-courses inserted
-          description: The array of ActionResponses is returned in the same order as the array ob submitted portal-courses, and contains information for each individual insert. If the insert was successfull, the id of the new portal-courses is returned.
+          description: |
+            Portal-courses inserted
+            The array of ActionResponses is returned in the same order as the array ob submitted portal-courses, and contains information for each individual insert. If the insert was successfull, the id of the new portal-courses is returned.
           schema:
             type: array
             items:
@@ -1397,8 +1398,10 @@ paths:
               $ref: '#/definitions/PortalCourse'
       responses:
         '200':
-          summary: Portal-courses updated
-          description: The array of ActionResponses is returned in the same order as the array ob submitted portal-courses, and contains information for each individual update.
+          description: |
+            Portal-courses updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted portal-courses, and contains information for each individual update.
           schema:
             type: array
             items:
@@ -1445,6 +1448,11 @@ paths:
         tags:
           - Portal
         parameters:
+        - name: id
+          in: path
+          description: Id of the student
+          required: true
+          type: string
         - name: sort
           in: query
           description: Sort the portal-courses. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
