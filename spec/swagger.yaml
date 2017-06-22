@@ -1306,10 +1306,36 @@ paths:
           $ref: '#/responses/responseDefault'
   /portal/courses:
     get:
-      summary: Returns the portal courses in schulNetz
+      summary: List portal courses
+      description: |
+        Returns the portal-courses available in schulNetz
+
+        A portal-course is the combination of a class and a course, to which the students and tachers can be linked directly.
       tags:
         - Portal
-      parameters: []
+      parameters:
+        - name: sort
+          in: query
+          description: Sort the portal-courses. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: Filter the portal-courses. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: Paginate the list of portal-courses. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: Paginate the list of portal-courses. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
       responses:
         '200':
           description: Portal courses
@@ -1326,7 +1352,11 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
     post:
-      summary: Insert one or multiple portal courses in schulNetz
+      summary: Create portal-courses
+      description: |
+        Insert one or multiple portal-courses in schulNetz.
+
+        The value of the `id` property will be ignored. The ids of the created portal-courses will be returned in the `Action Reponse`, in the same order as the submitted array of portal-courses.
       tags:
         - Portal
       parameters:
@@ -1339,7 +1369,8 @@ paths:
               $ref: '#/definitions/PortalCourse'
       responses:
         '201':
-          description: Inserted portal course
+          summary: Portal-courses inserted
+          description: The array of ActionResponses is returned in the same order as the array ob submitted portal-courses, and contains information for each individual insert. If the insert was successfull, the id of the new portal-courses is returned.
           schema:
             type: array
             items:
@@ -1353,7 +1384,7 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
     put:
-      summary: Update portal course in schulNetz
+      summary: Update portal-courses
       tags:
         - Portal
       parameters:
@@ -1366,7 +1397,8 @@ paths:
               $ref: '#/definitions/PortalCourse'
       responses:
         '200':
-          description: Portal courses updated
+          summary: Portal-courses updated
+          description: The array of ActionResponses is returned in the same order as the array ob submitted portal-courses, and contains information for each individual update.
           schema:
             type: array
             items:
@@ -1381,8 +1413,8 @@ paths:
           $ref: '#/responses/responseDefault'
   '/portal/courses/{id}':
     delete:
-      summary: Delete a portal course in schulNetz
-      description: ''
+      summary: Delete a portal course
+      description: Delete the portal course
       tags:
         - Portal
       parameters:
@@ -1409,10 +1441,32 @@ paths:
   /portal/students/{id}/courses:
       get:
         summary: List portal-courses from students
-        description: Returns the PortalCourses of a students in the specified Semester.
+        description: Returns the portal-courses of a student in the specified Semester.
         tags:
           - Portal
-        parameters: []
+        parameters:
+        - name: sort
+          in: query
+          description: Sort the portal-courses. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: Filter the portal-courses. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: Paginate the list of portal-courses. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: Paginate the list of portal-courses. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
         responses:
           '200':
             description: List of PortalCourses
@@ -1429,11 +1483,11 @@ paths:
           default:
             $ref: '#/responses/responseDefault'
       put:
-        summary: Update students portal-courses
+        summary: Update a students portal-courses
         description: |
-          Updates the PortalCourses of a student in the specified semester.
+          Updates the portal-courses of a student in the specified semester.
 
-          An array of PortalCourse-Ids has to be submitted, not an array of acutal potal-courses.
+          An array of portal-course-Ids has to be submitted, not an array of acutal portal-courses.
         tags:
           - Portal
         parameters:
