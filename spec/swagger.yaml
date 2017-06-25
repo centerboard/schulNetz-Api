@@ -1506,11 +1506,6 @@ paths:
               type: array
               items:
                 type: string
-          - name: id
-            in: path
-            description: Id of the student
-            required: true
-            type: string
         responses:
           '200':
             description: Portal courses updated
@@ -1862,18 +1857,6 @@ definitions:
         type: string
       profil2:
         type: string
-      courseIds:
-        type: array
-        items:
-          type: string
-        readOnly: true
-        description: to assign courses, assign the student to the corresponding class
-      courseTokens:
-        type: array
-        items:
-          type: string
-        readOnly: true
-        description: to assign courses, assign the student to the corresponding class
       regularClasses:
         type: array
         items:
