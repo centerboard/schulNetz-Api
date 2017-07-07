@@ -586,6 +586,10 @@ paths:
         Insert one or multiple classes in schulNetz.
 
         The value of the `id` property will be ignored. The ids of the created classes will be returned in the `Action Reponse`, in the same order as the submitted array of classes.
+        <br>
+        `profileIds` : if a referenced profile is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
+        <br>
+        `teacherIds` : if a referenced teacher is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
       tags:
         - Courses and Classes
       parameters:
@@ -619,9 +623,9 @@ paths:
       description: |
         Update one or multiple classes in schulNetz<br>
         <br>
-        `profileTokens` : if a referenced profile is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
+        `profileIds` : if a referenced profile is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
         <br>
-        `teacherTokens` : if a referenced teacher is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
+        `teacherIds` : if a referenced teacher is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
       tags:
         - Courses and Classes
       parameters:
@@ -2521,16 +2525,16 @@ definitions:
           type: string
         readOnly: true
         description: to assign profiles, use the property profileIds
-      teacherIds:
+      classTeacherIds:
         type: array
         items:
           type: string
-      teacherTokens:
+      classTeacherTokens:
         type: array
         items:
           type: string
         readOnly: true
-        description: to assign teachers, use the property teacherIds
+        description: to assign the class-teachers, use the property classTeacherIds. 
   PortalCourse:
     type: object
     required:
@@ -2570,6 +2574,7 @@ definitions:
         items:
           type: string
       studentNames:
+        readOnly: true
         type: array
         items:
           type: string
@@ -2578,6 +2583,7 @@ definitions:
         items:
           type: string
       teacherTokens:
+        readOnly: true
         type: array
         items:
           type: string
