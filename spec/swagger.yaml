@@ -103,8 +103,8 @@ info:
 
     ## Specifiying the semester
 
-    Some properties of some objects are semester-bound, for exmaple the courses of a student. The semester to be used for these properties can be specified by the request parameter `semid`.
-    The provided value has to be a valid `id` of a `semester` object.
+    Some properties of some objects are semester-bound, for exmaple the courses of a student. The semester to be used for these properties can be specified by the request parameter `semid`.<br>
+    The provided value has to be a valid `id` of a `semester` object or `all`.<br>
     If no semester is specified, or the provided value is not valid, the current active semester of the instance will be used.
 
 
@@ -1702,7 +1702,34 @@ paths:
       summary: Returns the events (courseEvents) available in schulNetz
       tags:
         - Timetable
-      parameters: []
+      parameters:
+        - name: sort
+          in: query
+          description: Sort the events. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: Filter the events. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: Paginate the list of events. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: Paginate the list of events. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+        - name: semid
+          in: query
+          description: The semester to be used to filter the events, refer to the section [Semid](#section/Query-Parameters-Details/Specifiying-the-semester)
+          required: false
+          type: integer
       responses:
         '200':
           description: courseEvents
@@ -2174,10 +2201,10 @@ definitions:
         type: string
       startDate:
         type: string
-        format: date
+        format: date-time
       endDate:
         type: string
-        format: date
+        format: date-time
       text:
         type: string
       comment:
@@ -2823,10 +2850,10 @@ definitions:
         type: string
       startDate:
         type: string
-        format: date
+        format: date-time
       endDate:
         type: string
-        format: date
+        format: date-time
       roomId:
         type: string
       roomToken:
