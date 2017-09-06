@@ -2344,6 +2344,8 @@ definitions:
         type: string
       title:
         type: string
+      subtitle:
+        type: string
       offerNumber:
         type: integer
         format: int32
