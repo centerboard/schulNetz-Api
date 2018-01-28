@@ -2062,6 +2062,12 @@ definitions:
         type: string
       profil2:
         type: string
+      entryDate:
+        type: string
+        format: date
+      exitDate:
+        type: string
+        format: date
       regularClasses:
         type: array
         items:
@@ -2683,6 +2689,10 @@ definitions:
       token:
         type: string
       description:
+        type: string
+      description_female:
+        type: string
+      type:
         type: string
   Subject:
     type: object
