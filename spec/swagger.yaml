@@ -1987,7 +1987,7 @@ paths:
         description: 'Maximum date for filtering events, will be ignored if not in SQL-Format (YYYY-MM-DD)'
         required: false
         type: string
-  vocational/companies:
+  /vocational/companies:
     get:
       summary: List companies
       description: Returns the companies in schulNetz
@@ -2126,7 +2126,7 @@ paths:
         default:
           $ref: '#/responses/responseDefault'
 
-  vocational/contracts:
+  /vocational/contracts:
     get:
       summary: List contracts
       description: Returns the vocational contracts in schulNetz
