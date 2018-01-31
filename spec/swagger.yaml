@@ -3266,6 +3266,7 @@ definitions:
       courseId:
         type: string
   Setting:
+    type: object
     required:
       - key
     properties:
@@ -3274,6 +3275,7 @@ definitions:
       value:
         type: string
   Translation:
+    type: object
     required:
       - key
     properties:
@@ -3288,6 +3290,7 @@ definitions:
       page:
         type: string
   Contract:
+    type: object
     required:
       - number
       - canton
@@ -3336,6 +3339,7 @@ definitions:
       examYear:
         type: string
   Company:
+    type: object
     properties:
       id:
         type: string
@@ -3433,7 +3437,12 @@ definitions:
         type: string
       additionalFax:
         type: string
+      trainerIds:
+        type: array
+        items:
+          type: string
   Trainer:
+    type: object
     properties:
       id:
         type: string
@@ -3487,6 +3496,10 @@ definitions:
         description: Swiss Social Security Number without separation points
       externalKey:
         type: string
+      companyIds:
+        type: array
+        items:
+          type: string
 
   Error:
     required:
