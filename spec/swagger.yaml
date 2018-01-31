@@ -3112,6 +3112,10 @@ definitions:
         type: string
       startSemesterId:
         type: string
+      durationInSemester:
+        type: integer
+        format: int32
+        readOnly: true
       remark:
         type: string
       profileIds:
