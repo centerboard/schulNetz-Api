@@ -1987,6 +1987,397 @@ paths:
         description: 'Maximum date for filtering events, will be ignored if not in SQL-Format (YYYY-MM-DD)'
         required: false
         type: string
+  /vocational/companies:
+    get:
+      summary: List companies
+      description: Returns the companies in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - name: sort
+          in: query
+          description: Sort the companies. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: Filter the companies. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: Paginate the list of companies. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: Paginate the list of companies. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+      responses:
+        '200':
+          description: List of companies
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Company'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create companies
+      description: |
+        Insert one or multiple companies in schulNetz
+
+        The value of the id property will be ignored. The ids of the created companies will be returned in the Action Reponse, in the same order as the submitted array of companies.
+
+      tags:
+        - Vocational
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Company'
+      responses:
+        '201':
+          description: |
+            Companies created
+
+            The array of ActionResponses is returned in the same order as the array ob submitted companies, and contains information for each individual insert. If the insert was successfull, the id of the new company is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update companies
+      description: Update companies in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Company'
+      responses:
+        '200':
+          description: |
+            Companies updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted companies, and contains information for each individual update.
+
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/vocational/companies/{id}':
+    delete:
+      summary: Delete company
+      description: Delete a company in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - name: id
+          in: path
+          description: Id of the company to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Company deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+
+  /vocational/contracts:
+    get:
+      summary: List contracts
+      description: Returns the vocational contracts in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - name: sort
+          in: query
+          description: Sort the contracts. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: Filter the contracts. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: Paginate the list of contracts. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: Paginate the list of contracts. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)
+          required: false
+          type: string
+      responses:
+        '200':
+          description: List of contracts
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Contract'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create contracts
+      description: |
+        Insert one or multiple vocational contracts in schulNetz
+
+        The value of the id property will be ignored. The ids of the created contracts will be returned in the Action Reponse, in the same order as the submitted array of contracts.
+
+      tags:
+        - Vocational
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Contract'
+      responses:
+        '201':
+          description: |
+            Contracts created
+
+            The array of ActionResponses is returned in the same order as the array ob submitted contracts, and contains information for each individual insert. If the insert was successfull, the id of the new contract is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update contracts
+      description: Update one or multiple vocational contracts in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Contract'
+      responses:
+        '200':
+          description: |
+            Contracts updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted contracts, and contains information for each individual update.
+
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/vocational/contracts/{id}':
+    delete:
+      summary: Delete contract
+      description: Delete a vocational contract in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - name: id
+          in: path
+          description: Id of the contract to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Contract deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /vocational/trainers:
+    get:
+      summary: List trainers
+      description: Returns the trainers in schulNetz
+      tags:
+        - Vocational
+      parameters: []
+      responses:
+        '200':
+          description: Trainers
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Trainer'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create trainers
+      description: |
+        Insert one or multiple trainers in schulNetz
+
+        The value of the id property will be ignored. The ids of the created trainers will be returned in the Action Reponse, in the same order as the submitted array of trainers.
+      tags:
+        - Vocational
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Trainer'
+      responses:
+        '201':
+          description: |
+            Trainer created
+
+            The array of ActionResponses is returned in the same order as the array ob submitted trainers, and contains information for each individual insert. If the insert was successfull, the id of the new trainer is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update trainers
+      description: Update trainers in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Trainer'
+      responses:
+        '200':
+          description: |
+            Trainers updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted trainers, and contains information for each individual update.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/vocational/trainers/{id}':
+    delete:
+      summary: Delete trainer
+      description: Delete a trainer in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - name: id
+          in: path
+          description: Id of the trainer to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Trainer deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
 definitions:
   Semester:
     type: object
@@ -2725,6 +3116,10 @@ definitions:
         type: string
       startSemesterId:
         type: string
+      durationInSemester:
+        type: integer
+        format: int32
+        readOnly: true
       remark:
         type: string
       profileIds:
@@ -2879,6 +3274,7 @@ definitions:
       courseId:
         type: string
   Setting:
+    type: object
     required:
       - key
     properties:
@@ -2887,6 +3283,7 @@ definitions:
       value:
         type: string
   Translation:
+    type: object
     required:
       - key
     properties:
@@ -2900,6 +3297,218 @@ definitions:
         type: string
       page:
         type: string
+  Contract:
+    type: object
+    required:
+      - number
+      - canton
+      - studentId
+      - companyId
+    properties:
+      id:
+        type: string
+      number:
+        type: string
+      canton:
+        type: string
+      studentId:
+        type: string
+      companyId:
+        type: string
+      dateStart:
+        type: string
+        format: date
+      dateEnd:
+        type: string
+        format: date
+      dateCancellation:
+        type: string
+        format: date
+      type:
+        type: string
+      trainerIds:
+        type: array
+        items:
+          type: string
+      bbtNumber:
+        type: string
+      profile:
+        type: string
+      trainingVariant:
+        type: string
+      vocationalType:
+        type: string
+      examType:
+        type: string
+      examRepetition:
+        type: string
+      examPeriod:
+        type: string
+      examYear:
+        type: string
+  Company:
+    type: object
+    properties:
+      id:
+        type: string
+      lastName:
+        type: string
+      firstName:
+        type: string
+      detailedDesignation:
+        type: string
+      detailedDesignation2:
+        type: string
+      street:
+        type: string
+      addressLine2:
+        type: string
+        maxLength: 255
+      postOfficeBox:
+        type: string
+        maxLength: 255
+      zip:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      phone:
+        type: string
+      mobile:
+        type: string
+      email:
+        type: string
+      fax:
+        type: string
+      url:
+        type: string
+      emailAbsencesDispatch:
+        type: string
+      contactLastName:
+        type: string
+      contactFirstName:
+        type: string
+      contactDetailedDesignation:
+        type: string
+      contactDetailedDesignation2:
+        type: string
+      contactStreet:
+        type: string
+      contactAddressLine2:
+        type: string
+        maxLength: 255
+      contactPostOfficeBox:
+        type: string
+        maxLength: 255
+      contactZip:
+        type: string
+      contactCity:
+        type: string
+      contactCountry:
+        type: string
+      contactPhone:
+        type: string
+      contactMobile:
+        type: string
+      contactEmail:
+        type: string
+      contactFax:
+        type: string
+      additionalLastName:
+        type: string
+      additionalFirstName:
+        type: string
+      additionalDetailedDesignation:
+        type: string
+      additionalDetailedDesignation2:
+        type: string
+      additionalStreet:
+        type: string
+      additionalAddressLine2:
+        type: string
+        maxLength: 255
+      additionalPostOfficeBox:
+        type: string
+        maxLength: 255
+      additionalZip:
+        type: string
+      additionalCity:
+        type: string
+      additionalCountry:
+        type: string
+      additionalPhone:
+        type: string
+      additionalMobile:
+        type: string
+      additionalEmail:
+        type: string
+      additionalFax:
+        type: string
+      trainerIds:
+        type: array
+        items:
+          type: string
+  Trainer:
+    type: object
+    properties:
+      id:
+        type: string
+      idNr:
+        type: string
+      loginActive:
+        type: boolean
+        default: false
+      lastName:
+        type: string
+      firstName:
+        type: string
+      gender:
+        type: string
+        enum:
+          - male
+          - female
+      salutation:
+        type: string
+        maxLength: 255
+      token:
+        type: string
+      birthday:
+        type: string
+        format: date
+      street:
+        type: string
+      addressLine2:
+        type: string
+        maxLength: 255
+      postOfficeBox:
+        type: string
+        maxLength: 255
+      zip:
+        type: string
+      city:
+        type: string
+      phone:
+        type: string
+      mobile:
+        type: string
+      email:
+        type: string
+      emailPrivate:
+        type: string
+      fax:
+        type: string
+      socialSecurityNumber:
+        type: string
+        maxLength: 13
+        description: Swiss Social Security Number without separation points
+      externalKey:
+        type: string
+      companyIds:
+        type: array
+        items:
+          type: string
+
   Error:
     required:
       - code
