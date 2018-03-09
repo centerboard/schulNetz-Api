@@ -873,6 +873,12 @@ paths:
           $ref: '#/responses/response429'
         default:
           $ref: '#/responses/responseDefault'
+    parameters:
+      - name: withFile
+        in: query
+        description: Fill out the file field of the eSchoolCourse. If this parameter is not set, the file content will not be returned for performance reasons.
+        required: false
+        type: boolean
   '/eschool/courses/{menu}':
     get:
       summary: Returns the eSchool course requested by the menu (including all offers - single executions and InfoEvents)
@@ -898,6 +904,11 @@ paths:
         description: menu of the course to return
         required: true
         type: string
+      - name: withFile
+        in: query
+        description: Fill out the file field of the eSchoolCourse. If this parameter is not set, the file content will not be returned for performance reasons.
+        required: false
+        type: boolean
   /eschool/offers:
     get:
       summary: Returns all eSchool offers
@@ -925,6 +936,11 @@ paths:
         description: Filter the offers by type
         required: false
         type: string
+      - name: withFile
+        in: query
+        description: Fill out the file field of the offer. If this parameter is not set, the file content will not be returned for performance reasons.
+        required: false
+        type: boolean
   '/eschool/offers/{oid}':
     get:
       summary: Returns the eSchool offer requested by the offerID
@@ -2709,6 +2725,8 @@ definitions:
         type: string
       contactMail:
         type: string
+      file:
+        $ref: '#/definitions/File'
   OfferType:
     type: object
     required:
@@ -2772,6 +2790,8 @@ definitions:
         type: string
       contactMail:
         type: string
+      file:
+        $ref: '#/definitions/File'
       courseExecutions:
         type: array
         items:
@@ -2983,6 +3003,35 @@ definitions:
         minItems: 1
         items:
           type: string
+      additionalFields:
+        type: array
+        items:
+          $ref: '#/definitions/AdditionalRegistrationField'
+      files:
+        type: array
+        maxItems: 5
+        items:
+          $ref: '#/definitions/File'
+  File:
+    type: object
+    required:
+      - name
+      - content
+    properties:
+      name:
+        type: string
+      content:
+        type: string
+        format: byte
+  AdditionalRegistrationField:
+    type: object
+    required:
+      - key
+    properties:
+      key:
+        type: string
+      value:
+        type: string
   Teacher:
     type: object
     required:
