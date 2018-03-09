@@ -2506,7 +2506,11 @@ definitions:
         type: string
       course:
         type: string
+      courseType:
+        type: string
       subject:
+        type: string
+      subjectToken:
         type: string
       title:
         type: string
