@@ -1,0 +1,3586 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: schulNetz Rest API
+  description: |
+
+    # Introduction
+
+    This document specifies the webservices provided by schulNetz. This API is built using REST principles, which ensures predictable URLs that makes writing applications easy.
+
+    The services are structured by the following categories:
+
+      * __Configuration__ : Interface for the basic configuration of the schulNetz instance
+      * __Courses and Classes__ : Interface for the course structure
+      * __eSchool__ : Interface for eSchool offers and registrations
+      * __Me__ : Interface for retrieving data specific to the user
+      * __Persons__ : Interface for the persons
+      * __Portal__ : Interface for portal-instance specific data
+      * __Timetable__ : Interface for events
+      * __Rooms__ : Interface for the rooms
+
+    # Query Parameters Details
+
+    Most GET services support additional query parameters to sort, filter and paginate the list of results.
+
+    ## Sorting
+
+    The result of most GET services can be sorted by any of the corresponding object properties.
+
+      * Sorting order is specified by the left to right order of the properties listed
+      * Sorting direction defaults to ascending and can be changed to descending by using a minus sign (-) prefix on the requested field.
+
+    _Example_ :
+
+    `/rooms?sort=-capacity,token`
+
+    Retrieves a list of rooms in descending order of capacity. Rooms with the same capacity are sorted by the token.
+
+    ## Filtering
+
+    The result of most GET services can be filtered by any of the corresponding object properties.
+
+    A single filter uses the form:
+
+    `property operator expression`
+
+    In this syntax:
+
+      * `property`: the name of the object property to filter on.
+      * `operator` : defines the type of filter match to use. See the list of operators for more details.
+      * `expression` : states the values to be included in or excluded from the results.
+
+    ### Operators
+
+    The operators must be URL-encoded in order to be included in URL query strings.
+
+    All string operations are case insensitive.
+
+    | Operator | URL Encoded Form | Description | Examples |
+    | -------- | ----------- | -------- | -------- |
+    | == | %3D%3D | Equals | Return rooms where the capacity is exactly 50 persons:</br>`/rooms?filter=capacity%3D%3D50`</br>Retun students where the last name is Meier:</br>`/persons/students?filter=lastName%3D%3DMeier` |
+    | != | !%3D | Does not equal | Return rooms where the capacity is not 50 persons:</br>`/rooms?filter=capacity!%3D50`</br>Return students where the last name is not Meier:</br>`/persons/students?filter=lastName!%3DMeier` |
+    | =~ | %3D~ | Equals | Retun students where the last name contains Meier:</br>`/persons/students?filter=lastName%3D~Meier` |
+    | !~ | !~ | Does not equal | Return students where the last name does not conatin Meier:</br>`/persons/students?filter=lastName!~Meier` |
+    | > | %3E | Greater than | Return rooms where the capacity is strictly greater than 50 persons:</br>`/rooms?filter=capacity%3E50` |
+    | < | %3C | Less than | Return rooms where the capacity is strictly less than 50 persons:</br>`/rooms?filter=capacity%3C50` |
+    | >= | %3E%3D | Greater than or equal to | Return rooms where the capacity is 50 persons or more:</br>`/rooms?filter=capacity%3E%3D50` |
+    | < = | %3C%3D | Less than or equal to | Return rooms where the capacity is 50 persons or less:</br>`/rooms?filter=capacity%3C%3D50` |
+
+    ### Expression
+
+      * Characters such as & must be url-encoded in the usual way.
+      * The semicolon and comma must be backslash escaped when they appear in an expression.
+
+    ### Combining filters
+
+    Filters can be combined using `OR` and `AND` boolean logic.
+
+      * `OR`: The `OR` operator is defined using a comma `,`. It takes precedence over the `AND` operator.
+      * `AND`: The `AND` operator is defined using a semi-colon `;`. It is preceded by the `OR` operator.
+
+    _Examples_ :
+
+    Return the rooms with capacity for 15 to 30 persons:
+    `/rooms?filter=capacity%3C%3D15;capacity%3E%3D30`
+
+    Return all students where the first name contains Hans, and the last name is Meier or Meyer:
+    `/perons/students?filter=firstName%3D~Hans;lastName%3D%3DMeier,lastName%3D%3DMeyer`
+
+    ## Pagination
+
+    The result of most GET services can be paginated with the query parameters `per_page` and `page` to limit the number of datasets in the result.
+
+      * `per_page` indicates how many results will be returned.
+      * `page` is used to navigate through the pages, the first page is `1`
+
+    If one of these two parameters is missing, or is not numeric, the unpaginated list of results will be returned.
+
+    If the results are paginated, the response header will contain two additional entries:
+
+      * `X-Total-Count` : indicates the total count of datasets for the GET service, with respect to filtering if the corresponding query parameter is set.
+      * `Link` : provides links for the navigation through the pages. URLs for the next page (`rel="next"`) and the last page (`rel="last"`) are set if the requested page is not the last. URLs for the first page (`rel="first"`) and the previous page (`rel="previous"`) are set if the requested page is not the first.
+
+    ## Specifiying the semester
+
+    Some properties of some objects are semester-bound, for exmaple the courses of a student. The semester to be used for these properties can be specified by the request parameter `semid`.<br>
+    The provided value has to be a valid `id` of a `semester` object or `all`.<br>
+    If no semester is specified, or the provided value is not valid, the current active semester of the instance will be used.
+  contact:
+    name: Centerboard AG
+    email: apiteam@centerboard.ch
+    url: 'http://www.centerboard.ch'
+  x-logo:
+    url: 'https://centerboard.s3.amazonaws.com/CenterboardLogo.jpg'
+    backgroundColor: '#FFFFFF'
+host: xyz.schul-netz.com
+basePath: /mandant/rest/v1
+tags:
+  - name: Configuration
+    description: |
+      This interface exposes the basic configuration of the schulNetz instance:
+        * `Profiles`
+securityDefinitions:
+  basicAuth:
+    type: basic
+    description: Username consists of client-ID and userlogin (concatenated with a hyphen); use the userkey as the password
+security:
+  - basicAuth: []
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+responses:
+  response401:
+    description: '401 - Unauthorized: no or wrong user credentials (Client-ID, username, userkey)'
+    schema:
+      $ref: '#/definitions/Error'
+  response403:
+    description: '403 - Forbidden: The client is not allowed to connect to that service'
+    schema:
+      $ref: '#/definitions/Error'
+  response404:
+    description: 404 - Ressource/Object not found
+    schema:
+      $ref: '#/definitions/Error'
+  response429:
+    description: '429 - Too Many Requests: Number of max requests reached. Try again later.'
+    schema:
+      $ref: '#/definitions/Error'
+    headers:
+      X-Rate-Limit-Limit:
+        description: The number of allowed requests in the current period
+        type: integer
+      X-Rate-Limit-Remaining:
+        description: The number of remaining requests in the current period
+        type: integer
+      X-Rate-Limit-Reset:
+        description: The number of seconds left in the current period
+        type: integer
+  responseDefault:
+    description: Unexpected error
+    schema:
+      $ref: '#/definitions/Error'
+    headers:
+      X-Rate-Limit-Limit:
+        description: The number of allowed requests in the current period
+        type: integer
+      X-Rate-Limit-Remaining:
+        description: The number of remaining requests in the current period
+        type: integer
+      X-Rate-Limit-Reset:
+        description: The number of seconds left in the current period
+        type: integer
+paths:
+  /config/profiles:
+    get:
+      summary: List profiles
+      description: Returns the profiles available in schulNetz
+      tags:
+        - Configuration
+      parameters:
+        - name: sort
+          in: query
+          description: 'Sort the profiles. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter the profiles. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: List of profiles
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Profile'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create profiles
+      description: |
+        Insert one or multiple profiles in schulNetz.
+
+        The value of the `id` property will be ignored. The ids of the created profiles will be returned in the `Action Reponse`, in the same order as the submitted array of profiles.
+      tags:
+        - Configuration
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Profile'
+      responses:
+        '201':
+          description: |
+            Profiles created
+
+            The array of ActionResponses is returned in the same order as the array ob submitted profiles, and contains information for each individual insert. If the insert was successfull, the id of the new profile is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update profiles
+      description: Update one or multiple profiles in schulNetz
+      tags:
+        - Configuration
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Profile'
+      responses:
+        '200':
+          description: |
+            Profiles updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted profiles, and contains information for each individual update.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/config/profiles/{id}':
+    delete:
+      summary: Delete profile
+      description: Delete an existing profile in schulNetz
+      tags:
+        - Configuration
+      parameters:
+        - name: id
+          in: path
+          description: Id of the profile to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Profile deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /config/semester:
+    get:
+      summary: List semester
+      description: Returns the semesters of the schulNetz instance
+      operationId: configSemesterGet
+      tags:
+        - Configuration
+      parameters:
+        - name: sort
+          in: query
+          description: 'Sort the semester. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter the semester. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of semester. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of semester. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: List of semester
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Semester'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /config/settings:
+    get:
+      summary: List settings
+      description: Returns the settings of the schulNetz instance
+      operationId: configSettingsGet
+      tags:
+        - Configuration
+      responses:
+        '200':
+          description: List of configuration values
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Setting'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /config/subjects:
+    get:
+      summary: List subjects
+      description: Returns the subjects available in schulNetz
+      tags:
+        - Configuration
+      parameters:
+        - name: sort
+          in: query
+          description: 'Sort the subjects. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter the subjects. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of subjects. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of subjects. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: List of subjects
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Subject'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create subjects
+      description: |
+        Insert one or multiple subjects in schulNetz.
+
+        The value of the `id` property will be ignored. The ids of the created subjects will be returned in the `Action Reponse`, in the same order as the submitted array of subjects.
+      tags:
+        - Configuration
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Subject'
+      responses:
+        '201':
+          description: |
+            Subjects created
+            The array of ActionResponses is returned in the same order as the array ob submitted subjects, and contains information for each individual insert. If the insert was successfull, the id of the new subject is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update subjects
+      description: Update one or multiple subjects in schulNetz
+      tags:
+        - Configuration
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Subject'
+      responses:
+        '200':
+          description: |
+            Subjects updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted subjects, and contains information for each individual update.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/config/subjects/{id}':
+    delete:
+      summary: Delete subject
+      description: Delete an existing subject in schulNetz
+      tags:
+        - Configuration
+      parameters:
+        - name: id
+          in: path
+          description: Id of the subject to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Subject deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /config/translations:
+    get:
+      summary: List translations
+      description: Returns the translations available in schulNetz
+      operationId: configTranslationsGet
+      tags:
+        - Configuration
+      parameters:
+        - name: sort
+          in: query
+          description: 'Sort the profiles. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter the profiles. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Array of translation values
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Translation'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /classes:
+    get:
+      summary: List classes
+      description: Returns the classes available in schulNetz
+      tags:
+        - Courses and Classes
+      parameters:
+        - name: sort
+          in: query
+          description: 'Sort the classes. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter  the classes. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of classes. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of classes. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Classes
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Class'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create classes
+      description: |
+        Insert one or multiple classes in schulNetz.
+
+        The value of the `id` property will be ignored. The ids of the created classes will be returned in the `Action Reponse`, in the same order as the submitted array of classes.
+        <br>
+        `profileIds` : if a referenced profile is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
+        <br>
+        `teacherIds` : if a referenced teacher is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
+      tags:
+        - Courses and Classes
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Class'
+      responses:
+        '201':
+          description: |
+            Classes created
+
+            The ActionResponses is returned in the same order as the array ob submitted classes, and contains information for each individual insert. If the insert was successfull, the id of the new class is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update classes
+      description: |
+        Update one or multiple classes in schulNetz<br>
+        <br>
+        `profileIds` : if a referenced profile is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
+        <br>
+        `teacherIds` : if a referenced teacher is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
+      tags:
+        - Courses and Classes
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Class'
+      responses:
+        '200':
+          description: |
+            Classes updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted classes, and contains information for each individual update.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/classes/{id}':
+    delete:
+      summary: Delete class
+      description: Delete an existing class in schulNetz
+      tags:
+        - Courses and Classes
+      parameters:
+        - name: id
+          in: path
+          description: Id of the class to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Class deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /courses:
+    get:
+      summary: List courses
+      description: Returns the courses available in schulNetz
+      tags:
+        - Courses and Classes
+      parameters:
+        - name: sort
+          in: query
+          description: 'Sort the courses. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter the courses. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of courses. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of courses. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Courses
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Course'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create courses
+      description: |
+        Insert one or multiple courses in schulNetz.
+
+        The value of the `id` property will be ignored. The ids of the created courses will be returned in the `Action Reponse`, in the same order as the submitted array of courses.
+        <br>
+        `classIds` : if a referenced class is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
+        <br>
+        `teacherIds` : if a referenced teacher is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
+      tags:
+        - Courses and Classes
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Course'
+      responses:
+        '201':
+          description: |
+            Courses created
+
+            The ActionResponses is returned in the same order as the array ob submitted courses, and contains information for each individual insert. If the insert was successfull, the id of the new course is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update courses
+      description: |
+        Update one or multiple courses in schulNetz<br>
+        <br>
+        `classIds` : if a referenced class is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
+        <br>
+        `teacherIds` : if a referenced teacher is missing from the array, the link will be deleted. If this property is not submitted at all, the links will not be changed
+      tags:
+        - Courses and Classes
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Course'
+      responses:
+        '200':
+          description: |
+            Courses updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted courses, and contains information for each individual update.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/courses/{id}':
+    delete:
+      summary: Delete course
+      description: Delete an existing course in schulNetz
+      tags:
+        - Courses and Classes
+      parameters:
+        - name: id
+          in: path
+          description: Id of the course to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Course deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /eschool/courses:
+    get:
+      summary: Returns all eSchool courses including the offers (infoEvents and singleExecutions)
+      operationId: eSchoolCoursesGet
+      tags:
+        - eSchool
+      responses:
+        '200':
+          description: eSchool Courses
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/eSchoolCourse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    parameters:
+      - name: withFile
+        in: query
+        description: 'Fill out the file field of the eSchoolCourse. If this parameter is not set, the file content will not be returned for performance reasons.'
+        required: false
+        type: boolean
+  '/eschool/courses/{menu}':
+    get:
+      summary: Returns the eSchool course requested by the menu (including all offers - single executions and InfoEvents)
+      operationId: eSchoolCourseGet
+      tags:
+        - eSchool
+      responses:
+        '200':
+          description: eSchool Course
+          schema:
+            $ref: '#/definitions/eSchoolCourse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    parameters:
+      - name: menu
+        in: path
+        description: menu of the course to return
+        required: true
+        type: string
+      - name: withFile
+        in: query
+        description: 'Fill out the file field of the eSchoolCourse. If this parameter is not set, the file content will not be returned for performance reasons.'
+        required: false
+        type: boolean
+  /eschool/offers:
+    get:
+      summary: Returns all eSchool offers
+      operationId: eSchoolOffersGet
+      tags:
+        - eSchool
+      responses:
+        '200':
+          description: eSchool offers
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Offer'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    parameters:
+      - name: type
+        in: query
+        description: Filter the offers by type
+        required: false
+        type: string
+      - name: withFile
+        in: query
+        description: 'Fill out the file field of the offer. If this parameter is not set, the file content will not be returned for performance reasons.'
+        required: false
+        type: boolean
+  '/eschool/offers/{oid}':
+    get:
+      summary: Returns the eSchool offer requested by the offerID
+      operationId: eSchoolOfferGet
+      tags:
+        - eSchool
+      responses:
+        '200':
+          description: eSchool offer
+          schema:
+            $ref: '#/definitions/Offer'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    parameters:
+      - name: oid
+        in: path
+        description: offerID of the offer to return
+        required: true
+        type: string
+  /eschool/offerTypes:
+    get:
+      summary: Returns all eSchool offer Types
+      operationId: eSchoolOfferTypesGet
+      tags:
+        - eSchool
+      responses:
+        '200':
+          description: eSchool offer Types
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OfferType'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/eschool/offerTypes/{tid}':
+    get:
+      summary: Returns the eSchool offer-type requested by the typeID
+      operationId: eSchoolOfferTypeGet
+      tags:
+        - eSchool
+      responses:
+        '200':
+          description: eSchool offer
+          schema:
+            $ref: '#/definitions/OfferType'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    parameters:
+      - name: tid
+        in: path
+        description: typeID of the offer-type to return
+        required: true
+        type: string
+  /eschool/registration:
+    post:
+      summary: Registers a person to eSchool-offers.
+      operationId: eSchoolRegistration
+      tags:
+        - eSchool
+      responses:
+        '201':
+          description: successful creation of registration
+          schema:
+            $ref: '#/definitions/PostResponse'
+        '400':
+          description: 'Bad Request: the provided data could not be parsed to a valid registration'
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    parameters:
+      - name: registration
+        in: body
+        description: Registration-Data for the registration to save
+        required: true
+        schema:
+          $ref: '#/definitions/Registration'
+  /me:
+    get:
+      summary: Returns personal student information
+      operationId: meGet
+      tags:
+        - Me
+      responses:
+        '200':
+          description: Personal Student-Information
+          schema:
+            $ref: '#/definitions/Student'
+          headers:
+            X-Rate-Limit-Limit:
+              description: The number of allowed requests in the current period
+              type: integer
+            X-Rate-Limit-Remaining:
+              description: The number of remaining requests in the current period
+              type: integer
+            X-Rate-Limit-Reset:
+              description: The number of seconds left in the current period
+              type: integer
+          examples:
+            application/json:
+              id: 9
+              idNr: XY01234
+              lastName: MyLastName
+              firstName: MyFirstName
+              gender: male
+              birthday: '1999-09-29'
+              phone: 061 211 00 10
+              mobile: 079 520 01 20
+              email: First.Last@schule.ch
+              emailPrivate: myPrivateMail@hotmail.com
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /me/grades:
+    get:
+      summary: Returns all grades from current semester
+      operationId: meGradesGet
+      tags:
+        - Me
+      responses:
+        '200':
+          description: All Grades from current semester
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ExaminationMark'
+          examples:
+            application/json:
+              - id: 99
+                course: F-4a
+                title: First Exam
+                date: '2016-07-20'
+                mark: 4.5
+                weight: 1
+              - id: 109
+                course: M-4a
+                title: Trigonometrie
+                date: '2016-07-12'
+                mark: 4
+                weight: 1
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /me/absencenotices:
+    get:
+      summary: Returns all absencenotices from current semester
+      operationId: meAbsenceNoticesGet
+      tags:
+        - Me
+      responses:
+        '200':
+          description: All absencenotices from current semester
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AbsenceNotice'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /me/absences:
+    get:
+      summary: Returns all absences from current semester
+      operationId: meAbsencesGet
+      tags:
+        - Me
+      responses:
+        '200':
+          description: All absences from current semester
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Absence'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /me/events:
+    get:
+      summary: 'Returns all events between min- and max-dates if provided, else from current semester'
+      operationId: meEventsGet
+      tags:
+        - Me
+      responses:
+        '200':
+          description: 'All events between min- and max-dates if provided, else from current semester'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Event'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    parameters:
+      - name: min_date
+        in: query
+        description: 'Minimum date for filtering events, will be ignored if not in SQL-Format (YYYY-MM-DD)'
+        required: false
+        type: string
+      - name: max_date
+        in: query
+        description: 'Maximum date for filtering events, will be ignored if not in SQL-Format (YYYY-MM-DD)'
+        required: false
+        type: string
+  /me/exams:
+    get:
+      summary: 'Returns all exams between min- and max-dates if provided, else from current semester'
+      operationId: meExamsGet
+      tags:
+        - Me
+      responses:
+        '200':
+          description: 'All exams between min- and max-dates if provided, else from current semester'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Event'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    parameters:
+      - name: min_date
+        in: query
+        description: 'Minimum date for filtering exams, will be ignored if not in SQL-Format (YYYY-MM-DD)'
+        required: false
+        type: string
+      - name: max_date
+        in: query
+        description: 'Maximum date for filtering exams, will be ignored if not in SQL-Format (YYYY-MM-DD)'
+        required: false
+        type: string
+  /persons/students:
+    get:
+      summary: List students
+      description: Returns the students in schulNetz
+      tags:
+        - Persons
+      parameters:
+        - name: sort
+          in: query
+          description: 'Sort the students. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter the students. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of students. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of students. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: semid
+          in: query
+          description: 'The semester to be used to compute the `courseIds` and `classIds`, refer to the section [Semid](#section/Query-Parameters-Details/Specifiying-the-semester)'
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: List of students
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Student'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create students
+      description: |
+        Insert one or multiple students in schulNetz
+
+        The value of the id property will be ignored. The ids of the created students will be returned in the Action Reponse, in the same order as the submitted array of students.
+
+        The array of courses is a readonly attribute of a student. The assignation of a student to a course is done by assigning the student to a class which is assigned to this course.
+
+        When writing the class-assignations (regular or additional classes), if the id and token do not match, the link will not be written and a warning will be returned. If no other error occured, other supplied data will be written.
+      tags:
+        - Persons
+      parameters:
+        - name: semid
+          in: query
+          description: 'The semester to be used to insert the `courseIds` and `classIds`, refer to the section [Semid](#section/Query-Parameters-Details/Specifiying-the-semester)'
+          required: false
+          type: integer
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Student'
+      responses:
+        '201':
+          description: |
+            Students created
+
+            The array of ActionResponses is returned in the same order as the array ob submitted students, and contains information for each individual insert. If the insert was successfull, the id of the new student is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update students
+      description: Update student in schulNetz
+      tags:
+        - Persons
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Student'
+      responses:
+        '200':
+          description: |
+            Students updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted students, and contains information for each individual update.
+
+            The array of courses is a readonly attribute of a student. The assignation of a student to a course is done by assigning the student to a class which is assigned to this course.
+
+            When writing the class-assignations (regular or additional classes), if the id and token do not match, the link will not be written and a warning will be returned. If no other error occured, other supplied data will be written.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/persons/students/{id}':
+    delete:
+      summary: Delete student
+      description: Delete a student in schulNetz
+      tags:
+        - Persons
+      parameters:
+        - name: id
+          in: path
+          description: Id of the student to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Student deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /persons/teachers:
+    get:
+      summary: List teachers
+      description: Returns the teachers in schulNetz
+      tags:
+        - Persons
+      parameters: []
+      responses:
+        '200':
+          description: Teachers
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Teacher'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create teachers
+      description: |
+        Insert one or multiple teachers in schulNetz
+
+        The value of the id property will be ignored. The ids of the created teachers will be returned in the Action Reponse, in the same order as the submitted array of teachers.
+      tags:
+        - Persons
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Teacher'
+      responses:
+        '201':
+          description: |
+            Teacher created
+
+            The array of ActionResponses is returned in the same order as the array ob submitted teachers, and contains information for each individual insert. If the insert was successfull, the id of the new teacher is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update teachers
+      description: Update teacher in schulNetz
+      tags:
+        - Persons
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Teacher'
+      responses:
+        '200':
+          description: |
+            Teachers updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted teachers, and contains information for each individual update.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/persons/teachers/{id}':
+    delete:
+      summary: Delete teacher
+      description: Delete a teacher in schulNetz
+      tags:
+        - Persons
+      parameters:
+        - name: id
+          in: path
+          description: Id of the teacher to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Teacher deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /portal/courses:
+    get:
+      summary: List portal courses
+      description: |
+        Returns the portal-courses available in schulNetz
+
+        A portal-course is the combination of a class and a course, to which the students and tachers can be linked directly.
+      tags:
+        - Portal
+      parameters:
+        - name: sort
+          in: query
+          description: 'Sort the portal-courses. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter the portal-courses. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of portal-courses. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of portal-courses. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Portal courses
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PortalCourse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create portal-courses
+      description: |
+        Insert one or multiple portal-courses in schulNetz.
+
+        The value of the `id` property will be ignored. The ids of the created portal-courses will be returned in the `Action Reponse`, in the same order as the submitted array of portal-courses.
+      tags:
+        - Portal
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PortalCourse'
+      responses:
+        '201':
+          description: |
+            Portal-courses inserted
+            The array of ActionResponses is returned in the same order as the array ob submitted portal-courses, and contains information for each individual insert. If the insert was successfull, the id of the new portal-courses is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update portal-courses
+      tags:
+        - Portal
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PortalCourse'
+      responses:
+        '200':
+          description: |
+            Portal-courses updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted portal-courses, and contains information for each individual update.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/portal/courses/{id}':
+    delete:
+      summary: Delete a portal course
+      description: Delete the portal course
+      tags:
+        - Portal
+      parameters:
+        - name: id
+          in: path
+          description: Id of the portal course to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: PortalCourse deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/portal/students/{id}/courses':
+    get:
+      summary: List portal-courses from students
+      description: Returns the portal-courses of a student in the specified Semester.
+      tags:
+        - Portal
+      parameters:
+        - name: id
+          in: path
+          description: Id of the student
+          required: true
+          type: string
+        - name: sort
+          in: query
+          description: 'Sort the portal-courses. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter the portal-courses. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of portal-courses. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of portal-courses. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: List of PortalCourses
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PortalCourse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update a students portal-courses
+      description: |
+        Updates the portal-courses of a student in the specified semester.
+
+        An array of portal-course-Ids has to be submitted, not an array of acutal portal-courses.
+      tags:
+        - Portal
+      parameters:
+        - name: id
+          in: path
+          description: Id of the student
+          required: true
+          type: string
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Portal courses updated
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /timetable/courseEvents:
+    get:
+      summary: Returns the events (courseEvents) available in schulNetz
+      tags:
+        - Timetable
+      parameters:
+        - name: sort
+          in: query
+          description: 'Sort the events. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter the events. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of events. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of events. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: semid
+          in: query
+          description: 'The semester to be used to filter the events, refer to the section [Semid](#section/Query-Parameters-Details/Specifiying-the-semester)'
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: courseEvents
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CourseEvent'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Insert one or multiple events (courseEvents) in schulNetz
+      tags:
+        - Timetable
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CourseEvent'
+      responses:
+        '201':
+          description: Inserted courseEvents
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update events (courseEvents) in schulNetz
+      tags:
+        - Timetable
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CourseEvent'
+      responses:
+        '200':
+          description: events updated
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/timetable/courseEvents/{id}':
+    delete:
+      summary: Delete an event (courseEvent) in schulNetz
+      description: ''
+      tags:
+        - Timetable
+      parameters:
+        - name: id
+          in: path
+          description: Id of the evemt (courseEvent) to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Event deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /rooms:
+    get:
+      summary: Returns the rooms available in schulNetz
+      tags:
+        - Rooms
+      parameters:
+        - name: sort
+          in: query
+          description: 'Sort the profiles. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter the profiles. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of profiles. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Rooms
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Room'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Insert one or multiple rooms in schulNetz
+      tags:
+        - Rooms
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Room'
+      responses:
+        '201':
+          description: Inserted Room
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update room in schulNetz
+      tags:
+        - Rooms
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Room'
+      responses:
+        '200':
+          description: Room updated
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/rooms/{id}':
+    delete:
+      summary: Deletes a room in schulNetz
+      description: ''
+      tags:
+        - Rooms
+      parameters:
+        - name: id
+          in: path
+          description: Id of the room to be updated
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Room deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/rooms/{id}/events':
+    get:
+      summary: 'Returns all events between min- and max-dates if provided, else from current semester'
+      operationId: roomsEventsGet
+      tags:
+        - Rooms
+      responses:
+        '200':
+          description: 'All events between min- and max-dates if provided, else from current semester'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Event'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    parameters:
+      - name: id
+        in: path
+        description: Id of the room
+        required: true
+        type: string
+      - name: min_date
+        in: query
+        description: 'Minimum date for filtering events, will be ignored if not in SQL-Format (YYYY-MM-DD)'
+        required: false
+        type: string
+      - name: max_date
+        in: query
+        description: 'Maximum date for filtering events, will be ignored if not in SQL-Format (YYYY-MM-DD)'
+        required: false
+        type: string
+  /vocational/companies:
+    get:
+      summary: List companies
+      description: Returns the companies in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - name: sort
+          in: query
+          description: 'Sort the companies. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter the companies. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of companies. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of companies. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: List of companies
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Company'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create companies
+      description: |
+        Insert one or multiple companies in schulNetz
+
+        The value of the id property will be ignored. The ids of the created companies will be returned in the Action Reponse, in the same order as the submitted array of companies.
+      tags:
+        - Vocational
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Company'
+      responses:
+        '201':
+          description: |
+            Companies created
+
+            The array of ActionResponses is returned in the same order as the array ob submitted companies, and contains information for each individual insert. If the insert was successfull, the id of the new company is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update companies
+      description: Update companies in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Company'
+      responses:
+        '200':
+          description: |
+            Companies updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted companies, and contains information for each individual update.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/vocational/companies/{id}':
+    delete:
+      summary: Delete company
+      description: Delete a company in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - name: id
+          in: path
+          description: Id of the company to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Company deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /vocational/contracts:
+    get:
+      summary: List contracts
+      description: Returns the vocational contracts in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - name: sort
+          in: query
+          description: 'Sort the contracts. For more information, refer to the section [Sorting](#section/Query-Parameters-Details/Sorting)'
+          required: false
+          type: array
+          items:
+            type: string
+        - name: filter
+          in: query
+          description: 'Filter the contracts. For more information, refer to the section [Filtering](#section/Query-Parameters-Details/Filtering)'
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: 'Paginate the list of contracts. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+        - name: per_page
+          in: query
+          description: 'Paginate the list of contracts. For more information, refer to the section [Pagination](#section/Query-Parameters-Details/Pagination)'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: List of contracts
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Contract'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create contracts
+      description: |
+        Insert one or multiple vocational contracts in schulNetz
+
+        The value of the id property will be ignored. The ids of the created contracts will be returned in the Action Reponse, in the same order as the submitted array of contracts.
+      tags:
+        - Vocational
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Contract'
+      responses:
+        '201':
+          description: |
+            Contracts created
+
+            The array of ActionResponses is returned in the same order as the array ob submitted contracts, and contains information for each individual insert. If the insert was successfull, the id of the new contract is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update contracts
+      description: Update one or multiple vocational contracts in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Contract'
+      responses:
+        '200':
+          description: |
+            Contracts updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted contracts, and contains information for each individual update.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/vocational/contracts/{id}':
+    delete:
+      summary: Delete contract
+      description: Delete a vocational contract in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - name: id
+          in: path
+          description: Id of the contract to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Contract deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  /vocational/trainers:
+    get:
+      summary: List trainers
+      description: Returns the trainers in schulNetz
+      tags:
+        - Vocational
+      parameters: []
+      responses:
+        '200':
+          description: Trainers
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Trainer'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    post:
+      summary: Create trainers
+      description: |
+        Insert one or multiple trainers in schulNetz
+
+        The value of the id property will be ignored. The ids of the created trainers will be returned in the Action Reponse, in the same order as the submitted array of trainers.
+      tags:
+        - Vocational
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Trainer'
+      responses:
+        '201':
+          description: |
+            Trainer created
+
+            The array of ActionResponses is returned in the same order as the array ob submitted trainers, and contains information for each individual insert. If the insert was successfull, the id of the new trainer is returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+    put:
+      summary: Update trainers
+      description: Update trainers in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Trainer'
+      responses:
+        '200':
+          description: |
+            Trainers updated
+
+            The array of ActionResponses is returned in the same order as the array ob submitted trainers, and contains information for each individual update.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+  '/vocational/trainers/{id}':
+    delete:
+      summary: Delete trainer
+      description: Delete a trainer in schulNetz
+      tags:
+        - Vocational
+      parameters:
+        - name: id
+          in: path
+          description: Id of the trainer to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Trainer deleted
+          schema:
+            $ref: '#/definitions/ActionResponse'
+        '401':
+          $ref: '#/responses/response401'
+        '403':
+          $ref: '#/responses/response403'
+        '404':
+          $ref: '#/responses/response404'
+        '429':
+          $ref: '#/responses/response429'
+        default:
+          $ref: '#/responses/responseDefault'
+definitions:
+  Semester:
+    type: object
+    required:
+      - id
+      - token
+      - name
+    properties:
+      id:
+        type: string
+      token:
+        type: string
+      name:
+        type: string
+      schoolYear:
+        type: string
+      firstDay:
+        type: string
+        format: date
+      lastDay:
+        type: string
+        format: date
+  Student:
+    type: object
+    required:
+      - lastName
+      - firstName
+    properties:
+      id:
+        type: string
+      idNr:
+        type: string
+      lastName:
+        type: string
+      firstName:
+        type: string
+      loginActive:
+        type: boolean
+        default: false
+      gender:
+        type: string
+        enum:
+          - male
+          - female
+      birthday:
+        type: string
+        format: date
+      street:
+        type: string
+      addressLine2:
+        type: string
+        maxLength: 255
+      postOfficeBox:
+        type: string
+        maxLength: 255
+      zip:
+        type: string
+      city:
+        type: string
+      phone:
+        type: string
+        format: phone
+      mobile:
+        type: string
+        format: phone
+      email:
+        type: string
+        format: email
+      emailPrivate:
+        type: string
+        format: email
+      profil1:
+        type: string
+      profil2:
+        type: string
+      entryDate:
+        type: string
+        format: date
+      exitDate:
+        type: string
+        format: date
+      regularClasses:
+        type: array
+        items:
+          $ref: '#/definitions/ClassRef'
+      additionalClasses:
+        type: array
+        items:
+          $ref: '#/definitions/ClassRef'
+  ClassRef:
+    type: object
+    required:
+      - id
+      - token
+      - semester
+    properties:
+      id:
+        type: string
+      token:
+        type: string
+      semester:
+        type: integer
+        format: int32
+  ExaminationMark:
+    type: object
+    required:
+      - title
+    properties:
+      id:
+        type: string
+      course:
+        type: string
+      courseType:
+        type: string
+      subject:
+        type: string
+      subjectToken:
+        type: string
+      title:
+        type: string
+      date:
+        type: string
+        format: date
+      mark:
+        type: number
+        format: double
+      weight:
+        type: number
+        format: double
+      isConfirmed:
+        type: boolean
+  AbsenceNotice:
+    type: object
+    required:
+      - studentId
+      - date
+      - hourFrom
+      - hourTo
+      - status
+    properties:
+      id:
+        type: string
+      studentId:
+        type: string
+      date:
+        type: string
+        format: date
+      hourFrom:
+        type: string
+        format: date-time
+      hourTo:
+        type: string
+        format: date-time
+      status:
+        type: string
+      comment:
+        type: string
+      isExamLesson:
+        type: boolean
+      profile:
+        type: string
+      course:
+        type: string
+      absenceId:
+        type: string
+  Absence:
+    type: object
+    required:
+      - studentId
+      - dateFrom
+      - dateTo
+    properties:
+      id:
+        type: string
+      studentId:
+        type: string
+      dateFrom:
+        type: string
+        format: date
+      dateTo:
+        type: string
+        format: date
+      hourFrom:
+        type: string
+        format: date-time
+      hourTo:
+        type: string
+        format: date-time
+      subject:
+        type: string
+      profile:
+        type: string
+      lessons:
+        type: integer
+        format: int32
+      reason:
+        type: string
+      category:
+        type: string
+      comment:
+        type: string
+      remark:
+        type: string
+      isAcknowledged:
+        type: boolean
+      isExcused:
+        type: boolean
+      excusedDate:
+        type: string
+        format: date
+      additionalPeriod:
+        type: integer
+        format: int32
+  Event:
+    type: object
+    required:
+      - startDate
+      - endDate
+      - text
+    properties:
+      id:
+        type: string
+      startDate:
+        type: string
+        format: date-time
+      endDate:
+        type: string
+        format: date-time
+      text:
+        type: string
+      comment:
+        type: string
+      roomToken:
+        type: string
+      roomId:
+        type: string
+      teacher:
+        type: string
+      courseId:
+        type: string
+      courseToken:
+        type: string
+      status:
+        type: string
+      color:
+        type: string
+      eventType:
+        type: string
+        description: 'Event-Type: Timetable, exams, events'
+  Offer:
+    type: object
+    required:
+      - title
+      - id
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      titleShort:
+        type: string
+      offerNumber:
+        type: integer
+        format: int32
+      name:
+        type: string
+      abstract:
+        type: string
+      type:
+        type: string
+      menu:
+        type: string
+      content:
+        type: string
+      publicationStart:
+        type: string
+        format: date
+      publicationEnd:
+        type: string
+        format: date
+      registrationDeadline:
+        type: string
+        format: date
+      scope:
+        type: string
+      place:
+        type: string
+      mapLocation:
+        type: string
+      requirements:
+        type: string
+      certificate:
+        type: string
+      informationEvent:
+        type: string
+      additionalInformation:
+        type: string
+      links:
+        type: string
+      maxRegistrations:
+        type: integer
+        format: int32
+      canExceedMaxRegistrations:
+        type: boolean
+        default: false
+      currentRegistrationNumber:
+        type: integer
+        format: int32
+      courseStart:
+        type: string
+        format: date
+      courseEnd:
+        type: string
+        format: date
+      courseDays:
+        type: string
+      courseTimes:
+        type: string
+      courseRoom:
+        type: string
+      courseProfessor:
+        type: string
+      totalLessons:
+        type: number
+        format: double
+      costTotal:
+        type: string
+      costDetails:
+        type: string
+      contactName:
+        type: string
+      contactPhone:
+        type: string
+      contactMail:
+        type: string
+      file:
+        $ref: '#/definitions/File'
+  OfferType:
+    type: object
+    required:
+      - title
+      - id
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      titleShort:
+        type: string
+      infoText:
+        type: integer
+        format: int32
+      overviewFields:
+        type: array
+        items:
+          type: string
+      detailFields:
+        type: array
+        items:
+          type: string
+  eSchoolCourse:
+    type: object
+    required:
+      - menu
+    properties:
+      menu:
+        type: string
+      title:
+        type: string
+      subtitle:
+        type: string
+      offerNumber:
+        type: integer
+        format: int32
+      type:
+        type: string
+      abstract:
+        type: string
+      content:
+        type: string
+      scope:
+        type: string
+      requirements:
+        type: string
+      certificate:
+        type: string
+      informationEvent:
+        type: string
+      additionalInformation:
+        type: string
+      links:
+        type: string
+      costDetails:
+        type: string
+      contactName:
+        type: string
+      contactPhone:
+        type: string
+      contactMail:
+        type: string
+      options:
+        type: array
+        items:
+          type: string
+      file:
+        $ref: '#/definitions/File'
+      courseExecutions:
+        type: array
+        items:
+          $ref: '#/definitions/CourseOffer'
+      infoEvents:
+        type: array
+        items:
+          $ref: '#/definitions/CourseOffer'
+  CourseOffer:
+    type: object
+    required:
+      - offerId
+      - titleShort
+    properties:
+      offerId:
+        type: string
+      titleShort:
+        type: string
+      name:
+        type: string
+      publicationStart:
+        type: string
+        format: date
+      publicationEnd:
+        type: string
+        format: date
+      registrationDeadline:
+        type: string
+        format: date
+      place:
+        type: string
+      mapLocation:
+        type: string
+      maxRegistrations:
+        type: integer
+        format: int32
+      canExceedMaxRegistrations:
+        type: boolean
+        default: false
+      currentRegistrationNumber:
+        type: integer
+        format: int32
+      courseStart:
+        type: string
+        format: date
+      courseEnd:
+        type: string
+        format: date
+      courseDays:
+        type: string
+      courseTimes:
+        type: string
+      courseRoom:
+        type: string
+      courseProfessor:
+        type: string
+      totalLessons:
+        type: number
+        format: double
+      costTotal:
+        type: string
+  Registration:
+    type: object
+    required:
+      - lastName
+      - firstName
+      - offerIds
+    properties:
+      lastName:
+        type: string
+        maxLength: 255
+      firstName:
+        type: string
+        maxLength: 255
+      fullFirstName:
+        type: string
+        maxLength: 255
+        description: Full First Name (eg Anna Lena)
+      gender:
+        type: string
+        enum:
+          - male
+          - female
+      birthday:
+        type: string
+        format: date
+      salutation:
+        type: string
+        maxLength: 255
+      addressLine1:
+        type: string
+        maxLength: 255
+      addressLine2:
+        type: string
+        maxLength: 255
+      postOfficeBox:
+        type: string
+        maxLength: 255
+      zip:
+        type: string
+        maxLength: 255
+      city:
+        type: string
+        maxLength: 255
+      canton:
+        type: string
+        maxLength: 255
+      country:
+        type: string
+        maxLength: 255
+      phone:
+        type: string
+        maxLength: 255
+      phoneOffice:
+        type: string
+        maxLength: 255
+      mobile:
+        type: string
+        maxLength: 255
+      telefax:
+        type: string
+        maxLength: 255
+      email:
+        type: string
+        format: email
+      emailPrivate:
+        type: string
+        format: email
+      nationality:
+        type: string
+        maxLength: 2
+        description: Alpha-2 code ISO-3166
+      nationality2:
+        type: string
+        maxLength: 2
+        description: Alpha-2 code ISO-3166
+      hometown:
+        type: string
+        maxLength: 255
+      hometown2:
+        type: string
+        maxLength: 255
+      dateEntry:
+        type: string
+        format: date
+      dateExit:
+        type: string
+        format: date
+      registerNr:
+        type: string
+        maxLength: 255
+        description: Matrikel-Nr.
+      idNr:
+        type: string
+        maxLength: 255
+      externalKey:
+        type: string
+        maxLength: 255
+      socialSecurityNumber:
+        type: string
+        maxLength: 13
+        description: Swiss Social Security Number without separation points
+      invoiceLastName:
+        type: string
+        maxLength: 255
+      invoiceFirstName:
+        type: string
+        maxLength: 255
+      invoiceCompany:
+        type: string
+        maxLength: 255
+      invoiceSalutation:
+        type: string
+        maxLength: 255
+      invoiceAddressLine1:
+        type: string
+        maxLength: 255
+      invoiceAddressLine2:
+        type: string
+        maxLength: 255
+      invoicePostOfficeBox:
+        type: string
+        maxLength: 255
+      invoiceZip:
+        type: string
+        maxLength: 255
+      invoiceCity:
+        type: string
+        maxLength: 255
+      invoiceCanton:
+        type: string
+        maxLength: 255
+      invoiceCountry:
+        type: string
+        maxLength: 255
+      invoicePhone:
+        type: string
+        maxLength: 255
+      invoicePhoneOffice:
+        type: string
+        maxLength: 255
+      invoiceTelefax:
+        type: string
+        maxLength: 255
+      comment:
+        type: string
+      offerIds:
+        type: array
+        minItems: 1
+        items:
+          type: string
+      additionalFields:
+        type: array
+        items:
+          $ref: '#/definitions/AdditionalRegistrationField'
+      files:
+        type: array
+        maxItems: 5
+        items:
+          $ref: '#/definitions/File'
+  File:
+    type: object
+    required:
+      - name
+      - content
+    properties:
+      name:
+        type: string
+      content:
+        type: string
+        format: byte
+  AdditionalRegistrationField:
+    type: object
+    required:
+      - key
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+  Teacher:
+    type: object
+    required:
+      - firstName
+      - lastName
+    properties:
+      id:
+        type: string
+      idNr:
+        type: string
+      token:
+        type: string
+      lastName:
+        type: string
+      firstName:
+        type: string
+      loginActive:
+        type: boolean
+        default: false
+      birthday:
+        type: string
+        format: date
+      street:
+        type: string
+      addressLine2:
+        type: string
+        maxLength: 255
+      postOfficeBox:
+        type: string
+        maxLength: 255
+      zip:
+        type: string
+      city:
+        type: string
+      phone:
+        type: string
+      mobile:
+        type: string
+      email:
+        type: string
+      emailPrivate:
+        type: string
+      courseIds:
+        type: array
+        items:
+          type: string
+        description: |
+          courses that the teacher teaches in the defined semester
+      courseTokens:
+        type: array
+        items:
+          type: string
+        readOnly: true
+        description: 'to assign courses, use the property courseIds'
+      classIds:
+        type: array
+        items:
+          type: string
+        description: |
+          classes of which the teacher is class-teacher
+      classTokens:
+        type: array
+        items:
+          type: string
+        readOnly: true
+        description: 'to assign classes, use the property classIds'
+  Room:
+    type: object
+    required:
+      - token
+    properties:
+      id:
+        type: string
+      token:
+        type: string
+      description:
+        type: string
+      capacity:
+        type: integer
+      place:
+        type: string
+      phone:
+        type: string
+      comment:
+        type: string
+      responsible:
+        type: string
+  Profile:
+    type: object
+    required:
+      - token
+    properties:
+      id:
+        type: string
+      token:
+        type: string
+      description:
+        type: string
+      description_female:
+        type: string
+      type:
+        type: string
+  Subject:
+    type: object
+    required:
+      - token
+    properties:
+      id:
+        type: string
+      token:
+        type: string
+      description:
+        type: string
+  Class:
+    type: object
+    required:
+      - name
+      - startSemesterId
+    properties:
+      id:
+        type: string
+      token:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+      startSemesterId:
+        type: string
+      durationInSemester:
+        type: integer
+        format: int32
+        readOnly: true
+      remark:
+        type: string
+      profileIds:
+        type: array
+        items:
+          type: string
+      profileTokens:
+        type: array
+        items:
+          type: string
+        readOnly: true
+        description: 'to assign profiles, use the property profileIds'
+      classTeacherIds:
+        type: array
+        items:
+          type: string
+      classTeacherTokens:
+        type: array
+        items:
+          type: string
+        readOnly: true
+        description: 'to assign the class-teachers, use the property classTeacherIds.'
+      studentIds:
+        type: array
+        items:
+          type: string
+      studentNames:
+        readOnly: true
+        type: array
+        items:
+          type: string
+  PortalCourse:
+    type: object
+    required:
+      - semester
+      - token
+    properties:
+      id:
+        type: string
+      token:
+        type: string
+      name:
+        type: string
+      semester:
+        type: string
+      subjectId:
+        type: string
+      subjectToken:
+        type: string
+        readOnly: true
+        description: 'to update the subject, use the property subjectId'
+      dateStart:
+        type: string
+        format: date
+      dateEnd:
+        type: string
+        format: date
+      isMarkRelevant:
+        type: boolean
+        default: true
+      rounding:
+        type: integer
+        format: int32
+      courseType:
+        type: string
+      studentIds:
+        type: array
+        items:
+          type: string
+      studentNames:
+        readOnly: true
+        type: array
+        items:
+          type: string
+      teacherIds:
+        type: array
+        items:
+          type: string
+      teacherTokens:
+        readOnly: true
+        type: array
+        items:
+          type: string
+  Course:
+    type: object
+    required:
+      - semester
+      - token
+    properties:
+      id:
+        type: string
+      token:
+        type: string
+      name:
+        type: string
+      semester:
+        type: string
+      subjectId:
+        type: string
+      subjectToken:
+        type: string
+        readOnly: true
+        description: 'to update the subject, use the property subjectId'
+      dateStart:
+        type: string
+        format: date
+      dateEnd:
+        type: string
+        format: date
+      isMarkRelevant:
+        type: boolean
+        default: true
+      rounding:
+        type: integer
+        format: int32
+      classIds:
+        type: array
+        items:
+          type: string
+      classTokens:
+        readOnly: true
+        description: 'to update the classes, use the property classIds'
+        type: array
+        items:
+          type: string
+      teacherIds:
+        type: array
+        items:
+          type: string
+      teacherTokens:
+        readOnly: true
+        type: array
+        items:
+          type: string
+  CourseEvent:
+    type: object
+    properties:
+      id:
+        type: string
+      startDate:
+        type: string
+        format: date-time
+      endDate:
+        type: string
+        format: date-time
+      roomId:
+        type: string
+      roomToken:
+        type: string
+      courseToken:
+        type: string
+      courseId:
+        type: string
+  Setting:
+    type: object
+    required:
+      - key
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+  Translation:
+    type: object
+    required:
+      - key
+    properties:
+      key:
+        type: string
+      german:
+        type: string
+      english:
+        type: string
+      french:
+        type: string
+      page:
+        type: string
+  Contract:
+    type: object
+    required:
+      - number
+      - canton
+      - studentId
+      - companyId
+    properties:
+      id:
+        type: string
+      number:
+        type: string
+      canton:
+        type: string
+      studentId:
+        type: string
+      companyId:
+        type: string
+      dateStart:
+        type: string
+        format: date
+      dateEnd:
+        type: string
+        format: date
+      dateCancellation:
+        type: string
+        format: date
+      type:
+        type: string
+      trainerIds:
+        type: array
+        items:
+          type: string
+      bbtNumber:
+        type: string
+      profile:
+        type: string
+      trainingVariant:
+        type: string
+      vocationalType:
+        type: string
+      examType:
+        type: string
+      examRepetition:
+        type: string
+      examPeriod:
+        type: string
+      examYear:
+        type: string
+  Company:
+    type: object
+    properties:
+      id:
+        type: string
+      lastName:
+        type: string
+      firstName:
+        type: string
+      detailedDesignation:
+        type: string
+      detailedDesignation2:
+        type: string
+      street:
+        type: string
+      addressLine2:
+        type: string
+        maxLength: 255
+      postOfficeBox:
+        type: string
+        maxLength: 255
+      zip:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      phone:
+        type: string
+      mobile:
+        type: string
+      email:
+        type: string
+      fax:
+        type: string
+      url:
+        type: string
+      emailAbsencesDispatch:
+        type: string
+      contactLastName:
+        type: string
+      contactFirstName:
+        type: string
+      contactDetailedDesignation:
+        type: string
+      contactDetailedDesignation2:
+        type: string
+      contactStreet:
+        type: string
+      contactAddressLine2:
+        type: string
+        maxLength: 255
+      contactPostOfficeBox:
+        type: string
+        maxLength: 255
+      contactZip:
+        type: string
+      contactCity:
+        type: string
+      contactCountry:
+        type: string
+      contactPhone:
+        type: string
+      contactMobile:
+        type: string
+      contactEmail:
+        type: string
+      contactFax:
+        type: string
+      additionalLastName:
+        type: string
+      additionalFirstName:
+        type: string
+      additionalDetailedDesignation:
+        type: string
+      additionalDetailedDesignation2:
+        type: string
+      additionalStreet:
+        type: string
+      additionalAddressLine2:
+        type: string
+        maxLength: 255
+      additionalPostOfficeBox:
+        type: string
+        maxLength: 255
+      additionalZip:
+        type: string
+      additionalCity:
+        type: string
+      additionalCountry:
+        type: string
+      additionalPhone:
+        type: string
+      additionalMobile:
+        type: string
+      additionalEmail:
+        type: string
+      additionalFax:
+        type: string
+      trainerIds:
+        type: array
+        items:
+          type: string
+  Trainer:
+    type: object
+    properties:
+      id:
+        type: string
+      idNr:
+        type: string
+      loginActive:
+        type: boolean
+        default: false
+      lastName:
+        type: string
+      firstName:
+        type: string
+      gender:
+        type: string
+        enum:
+          - male
+          - female
+      salutation:
+        type: string
+        maxLength: 255
+      token:
+        type: string
+      birthday:
+        type: string
+        format: date
+      street:
+        type: string
+      addressLine2:
+        type: string
+        maxLength: 255
+      postOfficeBox:
+        type: string
+        maxLength: 255
+      zip:
+        type: string
+      city:
+        type: string
+      phone:
+        type: string
+      mobile:
+        type: string
+      email:
+        type: string
+      emailPrivate:
+        type: string
+      fax:
+        type: string
+      socialSecurityNumber:
+        type: string
+        maxLength: 13
+        description: Swiss Social Security Number without separation points
+      externalKey:
+        type: string
+      companyIds:
+        type: array
+        items:
+          type: string
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+        description: '<ul><li>1001: Technical error while calling the Web Service</li><li>1002: Error while parsing the JSON</li><li>1003: Invalid input</li><li>1004: Database Error while inserting</li><li>1005: Database Error because of duplicate entry</li><li>5001: Invalid offerId</li><li>5002: Inavlid course menu</li></ul>'
+      message:
+        type: string
+      description:
+        type: string
+  ActionResponse:
+    required:
+      - id
+      - status
+    properties:
+      id:
+        type: string
+      status:
+        type: string
+        description: '<ul><li>0: OK</li><li>Exxx: Error</li><li>Wxxx: Warning</li></ul>'
+      message:
+        type: string
+  PostResponse:
+    required:
+      - id
+      - type
+    properties:
+      id:
+        type: string
+      type:
+        type: string
